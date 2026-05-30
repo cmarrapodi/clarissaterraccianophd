@@ -330,7 +330,7 @@ export default function ClarissaWebsite() {
               Book a free discovery call <ArrowRight size={14} />
             </button>
             <button onClick={() => goToBook()} style={{ background: "transparent", color: "#0D0D0D", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px solid rgba(0,0,0,0.25)", borderRadius: "3px", cursor: "pointer" }}>
-              Book a paid consultation
+              Book a service
             </button>
           </motion.div>
         </motion.div>
