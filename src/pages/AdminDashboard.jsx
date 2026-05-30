@@ -40,10 +40,8 @@ export default function AdminDashboard() {
   }
 
   useEffect(() => {
-    if (activeNav === 'bookings' || activeNav === 'overview') {
-      fetchBookings()
-    }
-  }, [activeNav])
+    fetchBookings()
+  }, [])
 
   const fetchBookings = async () => {
     setLoadingBookings(true)
@@ -51,7 +49,11 @@ export default function AdminDashboard() {
       .from('bookings')
       .select('*')
       .order('created_at', { ascending: false })
-    if (!error) setBookings(data || [])
+    if (error) {
+      console.error('Supabase error:', error)
+    } else {
+      setBookings(data || [])
+    }
     setLoadingBookings(false)
   }
 
@@ -70,7 +72,6 @@ export default function AdminDashboard() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#F9F6F2', fontFamily: 'inherit' }}>
 
-      {/* Sidebar */}
       <aside style={{ width: '220px', flexShrink: 0, background: '#1A0F24', display: 'flex', flexDirection: 'column', padding: '2rem 0', position: 'sticky', top: 0, height: '100vh' }}>
         <div style={{ padding: '0 1.5rem 2rem' }}>
           <div style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#9B6BBD', marginBottom: '4px' }}>Admin Portal</div>
@@ -96,10 +97,7 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* Main */}
       <main style={{ flex: 1, padding: '2.5rem', overflowY: 'auto' }}>
-
-        {/* Header */}
         <div style={{ marginBottom: '2.5rem' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#9B6BBD', marginBottom: '6px' }}>
             {navItems.find(n => n.id === activeNav)?.label}
@@ -109,7 +107,6 @@ export default function AdminDashboard() {
           </h1>
         </div>
 
-        {/* OVERVIEW */}
         {activeNav === 'overview' && (
           <>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
@@ -125,41 +122,41 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
-
-            {/* Recent bookings */}
             <div style={{ background: '#fff', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '1.5rem' }}>
               <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Recent bookings</div>
               {loadingBookings ? <div style={{ color: '#aaa', fontSize: '14px' }}>Loading...</div> :
+                bookings.length === 0 ? <div style={{ color: '#aaa', fontSize: '14px' }}>No bookings yet.</div> :
                 bookings.slice(0, 5).map(booking => (
-                  <div key={booking.id} onClick={() => setSelectedBooking(booking)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)', cursor: 'pointer' }}>
+                  <div key={booking.id} onClick={() => setSelectedBooking(booking)}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)', cursor: 'pointer' }}>
                     <div>
                       <div style={{ fontSize: '14px', fontWeight: 500, color: '#0D0D0D' }}>{booking.client_name}</div>
                       <div style={{ fontSize: '12px', color: '#888' }}>{booking.service_type} · {formatDate(booking.session_date)} at {booking.session_time}</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       <div style={{ fontSize: '14px', fontWeight: 500, color: '#5C2D82' }}>{formatMoney(booking.amount_cents)}</div>
-                      <div style={{ padding: '4px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: 500, background: statusColors[booking.status]?.bg || '#f5f5f5', color: statusColors[booking.status]?.color || '#666' }}>
+                      <div style={{ padding: '4px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: 500,
+                        background: statusColors[booking.status]?.bg || '#f5f5f5',
+                        color: statusColors[booking.status]?.color || '#666' }}>
                         {statusLabels[booking.status] || booking.status}
                       </div>
                     </div>
                   </div>
                 ))
               }
-              {bookings.length === 0 && !loadingBookings && <div style={{ color: '#aaa', fontSize: '14px' }}>No bookings yet.</div>}
             </div>
           </>
         )}
 
-        {/* BOOKINGS */}
         {activeNav === 'bookings' && (
           <div>
-            {/* Upcoming */}
             <div style={{ background: '#fff', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '1.5rem', marginBottom: '1.5rem' }}>
               <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Upcoming Sessions ({upcomingBookings.length})</div>
               {loadingBookings ? <div style={{ color: '#aaa' }}>Loading...</div> :
                 upcomingBookings.length === 0 ? <div style={{ color: '#aaa', fontSize: '14px' }}>No upcoming sessions.</div> :
                 upcomingBookings.map(booking => (
-                  <div key={booking.id} onClick={() => setSelectedBooking(booking)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)', cursor: 'pointer' }}>
+                  <div key={booking.id} onClick={() => setSelectedBooking(booking)}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)', cursor: 'pointer' }}>
                     <div>
                       <div style={{ fontSize: '14px', fontWeight: 500, color: '#0D0D0D' }}>{booking.client_name}</div>
                       <div style={{ fontSize: '12px', color: '#888', marginBottom: '2px' }}>{booking.service_type}</div>
@@ -168,7 +165,9 @@ export default function AdminDashboard() {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
                       <div style={{ fontSize: '16px', fontWeight: 500, color: '#5C2D82' }}>{formatMoney(booking.amount_cents)}</div>
-                      <div style={{ padding: '4px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: 500, background: statusColors[booking.status]?.bg || '#f5f5f5', color: statusColors[booking.status]?.color || '#666' }}>
+                      <div style={{ padding: '4px 10px', borderRadius: '100px', fontSize: '11px', fontWeight: 500,
+                        background: statusColors[booking.status]?.bg || '#f5f5f5',
+                        color: statusColors[booking.status]?.color || '#666' }}>
                         {statusLabels[booking.status] || booking.status}
                       </div>
                     </div>
@@ -176,13 +175,12 @@ export default function AdminDashboard() {
                 ))
               }
             </div>
-
-            {/* Past */}
             <div style={{ background: '#fff', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '1.5rem' }}>
               <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Past Sessions ({pastBookings.length})</div>
               {pastBookings.length === 0 ? <div style={{ color: '#aaa', fontSize: '14px' }}>No past sessions.</div> :
                 pastBookings.map(booking => (
-                  <div key={booking.id} onClick={() => setSelectedBooking(booking)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)', cursor: 'pointer', opacity: 0.7 }}>
+                  <div key={booking.id} onClick={() => setSelectedBooking(booking)}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)', cursor: 'pointer', opacity: 0.7 }}>
                     <div>
                       <div style={{ fontSize: '14px', fontWeight: 500, color: '#0D0D0D' }}>{booking.client_name}</div>
                       <div style={{ fontSize: '12px', color: '#888' }}>{booking.service_type} · {formatDate(booking.session_date)} at {booking.session_time}</div>
@@ -195,22 +193,21 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* OTHER SECTIONS */}
         {activeNav !== 'overview' && activeNav !== 'bookings' && (
           <div style={{ background: '#fff', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '3rem', textAlign: 'center' }}>
             <div style={{ fontSize: '18px', fontWeight: 400, color: '#0D0D0D', marginBottom: '0.5rem' }}>
-              {navItems.find(n => n.id === activeNav)?.label} — coming in next phase
+              {navItems.find(n => n.id === activeNav)?.label} — coming soon
             </div>
             <div style={{ fontSize: '14px', color: '#888' }}>This section is being built out.</div>
           </div>
         )}
-
       </main>
 
-      {/* Booking detail modal */}
       {selectedBooking && (
-        <div onClick={() => setSelectedBooking(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: '12px', padding: '2rem', maxWidth: '480px', width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.15)' }}>
+        <div onClick={() => setSelectedBooking(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+          <div onClick={e => e.stopPropagation()}
+            style={{ background: '#fff', borderRadius: '12px', padding: '2rem', maxWidth: '480px', width: '100%', boxShadow: '0 24px 64px rgba(0,0,0,0.15)' }}>
             <div style={{ fontSize: '18px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Booking Details</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '2rem' }}>
               {[
@@ -233,12 +230,16 @@ export default function AdminDashboard() {
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
               {['confirmed', 'pending_payment', 'cancelled'].map(status => (
                 <button key={status} onClick={() => updateBookingStatus(selectedBooking.id, status)}
-                  style={{ padding: '8px 14px', borderRadius: '6px', border: '0.5px solid rgba(0,0,0,0.15)', background: selectedBooking.status === status ? '#5C2D82' : '#fff', color: selectedBooking.status === status ? '#fff' : '#0D0D0D', fontSize: '12px', cursor: 'pointer' }}>
+                  style={{ padding: '8px 14px', borderRadius: '6px', border: '0.5px solid rgba(0,0,0,0.15)',
+                    background: selectedBooking.status === status ? '#5C2D82' : '#fff',
+                    color: selectedBooking.status === status ? '#fff' : '#0D0D0D',
+                    fontSize: '12px', cursor: 'pointer' }}>
                   {statusLabels[status]}
                 </button>
               ))}
             </div>
-            <button onClick={() => setSelectedBooking(null)} style={{ width: '100%', padding: '12px', background: '#F9F6F2', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: '6px', fontSize: '13px', cursor: 'pointer', color: '#666' }}>
+            <button onClick={() => setSelectedBooking(null)}
+              style={{ width: '100%', padding: '12px', background: '#F9F6F2', border: '0.5px solid rgba(0,0,0,0.1)', borderRadius: '6px', fontSize: '13px', cursor: 'pointer', color: '#666' }}>
               Close
             </button>
           </div>
