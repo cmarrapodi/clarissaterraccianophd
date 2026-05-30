@@ -3,7 +3,7 @@ import ClarissaWebsite from './ClarissaWebsite'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
-import BookingPage from './pages/BookingPage'
+import BookingPage from './BookingPage'
 
 export default function App() {
   return (
