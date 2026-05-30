@@ -36,13 +36,7 @@ export default function BookingPage() {
   const [step, setStep] = useState(1)
   const [selected, setSelected] = useState({ service: null, date: null, time: null })
   const [form, setForm] = useState({ name: '', email: '', phone: '', notes: '' })
-  const [intake, setIntake] = useState({
-    learner_age: '',
-    school_situation: '',
-    main_challenges: '',
-    goals: '',
-    heard_about: '',
-  })
+  const [intake, setIntake] = useState({ learner_age: '', school_situation: '', main_challenges: '', goals: '', heard_about: '' })
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
@@ -55,16 +49,8 @@ export default function BookingPage() {
     if (!form.name || !form.email) { setError('Please fill in your name and email.'); return }
     setLoading(true)
     setError('')
-
     try {
-      const intakeSummary = `
-AGE: ${intake.learner_age || 'Not provided'}
-SCHOOL SITUATION: ${intake.school_situation || 'Not provided'}
-MAIN CHALLENGES: ${intake.main_challenges || 'Not provided'}
-GOALS: ${intake.goals || 'Not provided'}
-HEARD ABOUT US: ${intake.heard_about || 'Not provided'}
-ADDITIONAL NOTES: ${form.notes || 'None'}
-      `.trim()
+      const intakeSummary = `AGE: ${intake.learner_age || 'Not provided'}\nSCHOOL SITUATION: ${intake.school_situation || 'Not provided'}\nMAIN CHALLENGES: ${intake.main_challenges || 'Not provided'}\nGOALS: ${intake.goals || 'Not provided'}\nHEARD ABOUT US: ${intake.heard_about || 'Not provided'}\nADDITIONAL NOTES: ${form.notes || 'None'}`
 
       const { error: dbError } = await supabase.from('bookings').insert({
         client_name: form.name,
@@ -125,8 +111,6 @@ ADDITIONAL NOTES: ${form.notes || 'None'}
       </nav>
 
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '4rem 2rem' }}>
-
-        {/* Progress */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3rem' }}>
           {['Select service', 'Pick a time', 'Your details'].map((label, i) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -137,7 +121,6 @@ ADDITIONAL NOTES: ${form.notes || 'None'}
           ))}
         </div>
 
-        {/* Step 1 */}
         {step === 1 && (
           <div>
             <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#0D0D0D', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>What can Dr. Terracciano help you with?</h1>
@@ -159,7 +142,6 @@ ADDITIONAL NOTES: ${form.notes || 'None'}
           </div>
         )}
 
-        {/* Step 2 */}
         {step === 2 && (
           <div>
             <button onClick={() => setStep(1)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#888', fontSize: '13px', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
@@ -200,7 +182,6 @@ ADDITIONAL NOTES: ${form.notes || 'None'}
           </div>
         )}
 
-        {/* Step 3 */}
         {step === 3 && (
           <div>
             <button onClick={() => setStep(2)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#888', fontSize: '13px', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
@@ -209,7 +190,6 @@ ADDITIONAL NOTES: ${form.notes || 'None'}
             <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#0D0D0D', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Your details</h1>
             <p style={{ fontSize: '14px', color: '#888', marginBottom: '2.5rem' }}>Please complete the intake form so Dr. Terracciano can prepare for your session.</p>
 
-            {/* Booking summary */}
             <div style={{ background: '#F2EBF8', border: '0.5px solid rgba(92,45,130,0.15)', borderRadius: '8px', padding: '1.5rem', marginBottom: '2rem' }}>
               <div style={{ fontSize: '13px', fontWeight: 500, color: '#3B1A55', marginBottom: '4px' }}>{service.title}</div>
               <div style={{ fontSize: '13px', color: '#9B6BBD', marginBottom: '12px' }}>{formatDate(selected.date)} at {selected.time} · via Zoom</div>
@@ -223,7 +203,6 @@ ADDITIONAL NOTES: ${form.notes || 'None'}
               )}
             </div>
 
-            {/* Contact info */}
             <div style={{ fontSize: '13px', fontWeight: 600, color: '#0D0D0D', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '1rem' }}>Contact Information</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '540px', marginBottom: '2rem' }}>
               {[
@@ -239,27 +218,26 @@ ADDITIONAL NOTES: ${form.notes || 'None'}
               ))}
             </div>
 
-            {/* Intake survey */}
             <div style={{ fontSize: '13px', fontWeight: 600, color: '#0D0D0D', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Intake Survey</div>
             <p style={{ fontSize: '13px', color: '#888', marginBottom: '1.5rem' }}>This helps Dr. Terracciano prepare a personalized, high-impact session for you.</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '540px', marginBottom: '2rem' }}>
               <div>
-                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Learner's age or grade level *</label>
+                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Learner's age or grade level</label>
                 <input type="text" placeholder="e.g. 8 years old, 3rd grade" value={intake.learner_age} onChange={e => setIntake({ ...intake, learner_age: e.target.value })}
                   style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box' }} />
               </div>
               <div>
-                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Current school situation *</label>
+                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Current school situation</label>
                 <input type="text" placeholder="e.g. Public school, homeschool, private school, college" value={intake.school_situation} onChange={e => setIntake({ ...intake, school_situation: e.target.value })}
                   style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box' }} />
               </div>
               <div>
-                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Main challenges or concerns *</label>
+                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Main challenges or concerns</label>
                 <textarea placeholder="What are the biggest challenges you're facing right now?" value={intake.main_challenges} onChange={e => setIntake({ ...intake, main_challenges: e.target.value })}
                   style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box', minHeight: '90px', resize: 'vertical' }} />
               </div>
               <div>
-                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Goals for working together *</label>
+                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Goals for working together</label>
                 <textarea placeholder="What would success look like for you?" value={intake.goals} onChange={e => setIntake({ ...intake, goals: e.target.value })}
                   style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box', minHeight: '90px', resize: 'vertical' }} />
               </div>
@@ -275,4 +253,19 @@ ADDITIONAL NOTES: ${form.notes || 'None'}
               </div>
             </div>
 
-            {error && <div style={{ marginTop: '1rem', padding: '10px 14px', background: '#FDF2F2', border: '0.5px solid rgba(220,50,50,0.2)', borderRadius: '6px', fontSize: '13px', color: '#9B2B2B', maxWidth: '540px' }}>{erro
+            {error && <div style={{ marginTop: '1rem', padding: '10px 14px', background: '#FDF2F2', border: '0.5px solid rgba(220,50,50,0.2)', borderRadius: '6px', fontSize: '13px', color: '#9B2B2B', maxWidth: '540px' }}>{error}</div>}
+
+            <button onClick={handleBook} disabled={loading}
+              style={{ marginTop: '2rem', background: loading ? '#9B6BBD' : '#5C2D82', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '3px', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {loading ? 'Confirming...' : service.price === 0 ? 'Confirm free booking' : `Confirm & pay $${service.price}`}
+              {!loading && <ArrowRight size={14} />}
+            </button>
+            <p style={{ fontSize: '12px', color: '#aaa', marginTop: '1rem' }}>
+              {service.price > 0 ? 'Payment collected securely via Stripe at confirmation.' : 'No payment required for discovery calls.'}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
