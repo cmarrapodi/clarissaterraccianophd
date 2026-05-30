@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase } from "./lib/supabase"
 import { ArrowRight, ArrowLeft, Calendar, Clock, User, Mail, Phone, CheckCircle } from 'lucide-react'
 
 const services = [
