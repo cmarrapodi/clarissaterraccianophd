@@ -1,6 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import {
   ArrowRight,
   BookOpen,
@@ -38,6 +37,8 @@ const values = [
   "Experience across public, private, virtual, and alternative education spaces",
 ];
 
+function goToBook() { window.location.href = "/book"; }
+
 function MarqueeStrip() {
   const doubled = [...stripItems, ...stripItems];
   return (
@@ -73,9 +74,9 @@ export default function ClarissaWebsite() {
           <a href="#services" style={{ color: "inherit", textDecoration: "none" }}>Services</a>
           <a href="#booking" style={{ color: "inherit", textDecoration: "none" }}>Contact</a>
         </div>
-        <Link to="/book" style={{ background: "#5C2D82", color: "#fff", padding: "10px 22px", borderRadius: "3px", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", display: "inline-block" }}>
+        <button onClick={goToBook} style={{ background: "#5C2D82", color: "#fff", border: "none", padding: "10px 22px", borderRadius: "3px", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}>
           Book a session
-        </Link>
+        </button>
       </nav>
 
       <section style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", minHeight: "88vh" }}>
@@ -96,10 +97,10 @@ export default function ClarissaWebsite() {
             ))}
           </motion.div>
           <motion.div variants={fadeUp} style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-            <Link to="/book" style={{ background: "#5C2D82", color: "#fff", padding: "14px 30px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: "3px", display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
+            <button onClick={goToBook} style={{ background: "#5C2D82", color: "#fff", padding: "14px 30px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}>
               Book a consultation <ArrowRight size={14} />
-            </Link>
-            <a href="#services" style={{ background: "transparent", color: "#0D0D0D", padding: "14px 30px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px solid rgba(0,0,0,0.25)", borderRadius: "3px", textDecoration: "none", display: "inline-block" }}>
+            </button>
+            <a href="#services" style={{ background: "transparent", color: "#0D0D0D", padding: "14px 30px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px solid rgba(0,0,0,0.25)", borderRadius: "3px", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
               Explore services
             </a>
           </motion.div>
@@ -202,9 +203,9 @@ export default function ClarissaWebsite() {
             ))}
           </div>
           <div style={{ textAlign: "center" }}>
-            <Link to="/book" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#5C2D82", color: "#fff", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: "3px", textDecoration: "none" }}>
+            <button onClick={goToBook} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#5C2D82", color: "#fff", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer" }}>
               Book a session <ArrowRight size={14} />
-            </Link>
+            </button>
           </div>
         </motion.div>
       </section>
@@ -238,12 +239,12 @@ export default function ClarissaWebsite() {
             Book a consultation for thoughtful, research-informed educational guidance tailored to your learner, family, school, or organization. All sessions are conducted via Zoom.
           </motion.p>
           <motion.div variants={fadeUp} style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link to="/book" style={{ background: "#5C2D82", color: "#fff", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: "3px", display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
+            <button onClick={goToBook} style={{ background: "#5C2D82", color: "#fff", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}>
               Book a free discovery call <ArrowRight size={14} />
-            </Link>
-            <Link to="/book" style={{ background: "transparent", color: "#0D0D0D", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px solid rgba(0,0,0,0.25)", borderRadius: "3px", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
+            </button>
+            <button onClick={goToBook} style={{ background: "transparent", color: "#0D0D0D", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px solid rgba(0,0,0,0.25)", borderRadius: "3px", cursor: "pointer" }}>
               Book a paid consultation
-            </Link>
+            </button>
           </motion.div>
         </motion.div>
       </section>
