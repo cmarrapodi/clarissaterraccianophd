@@ -1,7 +1,6 @@
 const Stripe = require('stripe');
 
 module.exports = async function handler(req, res) {
-  // CORS headers for Vercel
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -14,9 +13,8 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  const stripeKey = process.env.STRIPE_SECRET_KEY?.trim();
 
-  // Validate key exists and looks complete
   if (!stripeKey) {
     console.error('STRIPE_SECRET_KEY is not set');
     return res.status(500).json({ error: 'Stripe key not configured' });
@@ -84,7 +82,6 @@ module.exports = async function handler(req, res) {
   } catch (error) {
     console.error('Stripe checkout error:', error.message);
 
-    // Surface specific Stripe error types to the client
     if (error.type === 'StripeAuthenticationError') {
       return res.status(500).json({ error: 'Stripe authentication failed. Check that the full secret key is saved in Vercel.' });
     }
