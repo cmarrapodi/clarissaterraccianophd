@@ -6,13 +6,17 @@ const services = [
   { id: 'discovery', title: 'Free Discovery Call', duration: '30 min', price: 0, description: 'A complimentary call to discuss your needs and how Dr. Terracciano can help.' },
   { id: 'consulting', title: 'Private Educational Consulting', duration: '90 min', price: 375, description: 'Personalized 1:1 consulting for families navigating complex educational decisions.' },
   { id: 'tutoring', title: 'Academic Tutoring', duration: '90 min', price: 337.50, description: 'Expert subject-matter support tailored to your learner\'s pace, style, and goals.' },
+  { id: 'literacy', title: 'Literacy & Reading Support', duration: '90 min', price: 375, description: 'Structured literacy intervention using Orton-Gillingham, Wilson Reading System®, and PAF.' },
   { id: 'intervention', title: 'Intensive Academic Intervention', duration: '90 min', price: 412.50, description: 'Targeted, high-impact sessions for students who need accelerated support.' },
   { id: 'homeschool', title: 'Homeschool Planning & Curriculum Design', duration: '90 min', price: 450, description: 'Custom curriculum architecture and learning plans for homeschool families.' },
   { id: 'advocacy', title: 'Educational Advocacy & Parent Strategy', duration: '90 min', price: 375, description: 'Navigate IEPs, 504 plans, and school systems with confidence.' },
   { id: 'dissertation', title: 'Dissertation & Research Consulting', duration: '90 min', price: 375, description: 'Expert guidance for doctoral students and researchers.' },
   { id: 'policy', title: 'Educational Policy & EdTech Consulting', duration: '90 min', price: 525, description: 'Strategic consulting at the intersection of education, policy, and technology.' },
   { id: 'org', title: 'School / Organizational Consulting', duration: '90 min', price: 525, description: 'Systems-level consulting for schools and educational organizations.' },
+  { id: 'pods', title: 'Learning Pods', duration: '90 min', price: 375, description: 'Curated small-group learning series for children focused on academic growth.' },
   { id: 'retainer', title: 'Monthly Family Educational Retainer', duration: 'Ongoing', price: 1500, description: 'Ongoing monthly advisory support for families.' },
+  { id: 'halfday', title: 'Half-Day Consulting', duration: '4 hrs', price: 1500, description: 'Intensive half-day consulting for schools and organizations.' },
+  { id: 'fullday', title: 'Full-Day Consulting', duration: '8 hrs', price: 3000, description: 'Full-day strategic consulting engagement.' },
 ]
 
 const timeSlots = ['9:00 AM', '10:30 AM', '12:00 PM', '1:30 PM', '3:00 PM', '4:30 PM']
@@ -32,6 +36,13 @@ export default function BookingPage() {
   const [step, setStep] = useState(1)
   const [selected, setSelected] = useState({ service: null, date: null, time: null })
   const [form, setForm] = useState({ name: '', email: '', phone: '', notes: '' })
+  const [intake, setIntake] = useState({
+    learner_age: '',
+    school_situation: '',
+    main_challenges: '',
+    goals: '',
+    heard_about: '',
+  })
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
@@ -46,70 +57,45 @@ export default function BookingPage() {
     setError('')
 
     try {
-      if (service.price > 0) {
-        await supabase.from('bookings').insert({
-          client_name: form.name,
-          client_email: form.email,
-          client_phone: form.phone,
-          service_type: service.title,
-          session_date: selected.date.toISOString().split('T')[0],
-          session_time: selected.time,
-          duration_minutes: 90,
-          amount_cents: service.price * 100,
-          payment_status: 'pending',
-          notes: form.notes,
-          status: 'pending_payment',
-        })
+      const intakeSummary = `
+AGE: ${intake.learner_age || 'Not provided'}
+SCHOOL SITUATION: ${intake.school_situation || 'Not provided'}
+MAIN CHALLENGES: ${intake.main_challenges || 'Not provided'}
+GOALS: ${intake.goals || 'Not provided'}
+HEARD ABOUT US: ${intake.heard_about || 'Not provided'}
+ADDITIONAL NOTES: ${form.notes || 'None'}
+      `.trim()
 
-        const response = await fetch('/api/create-checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            serviceTitle: service.title,
-            amount: service.price * 100,
-            clientEmail: form.email,
-            sessionDate: formatDate(selected.date),
-            sessionTime: selected.time,
-          }),
-        })
-        const data = await response.json()
-        if (data.url) {
-          window.location.href = data.url
-        } else {
-          throw new Error('No checkout URL')
-        }
-      } else {
-        await supabase.from('bookings').insert({
-          client_name: form.name,
-          client_email: form.email,
-          client_phone: form.phone,
-          service_type: service.title,
-          session_date: selected.date.toISOString().split('T')[0],
-          session_time: selected.time,
-          duration_minutes: 30,
-          amount_cents: 0,
-          payment_status: 'free',
-          notes: form.notes,
-          status: 'confirmed',
-        })
+      const { error: dbError } = await supabase.from('bookings').insert({
+        client_name: form.name,
+        client_email: form.email,
+        client_phone: form.phone,
+        service_type: service.title,
+        session_date: selected.date.toISOString().split('T')[0],
+        session_time: selected.time,
+        duration_minutes: service.id === 'discovery' ? 30 : 90,
+        amount_cents: service.price * 100,
+        payment_status: service.price === 0 ? 'free' : 'pending',
+        notes: intakeSummary,
+        status: 'confirmed',
+      })
+      if (dbError) throw dbError
 
-        // Send email notification
-        await fetch('/api/send-notification', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            clientName: form.name,
-            clientEmail: form.email,
-            clientPhone: form.phone,
-            serviceTitle: service.title,
-            sessionDate: formatDate(selected.date),
-            sessionTime: selected.time,
-            notes: form.notes,
-          }),
-        })
+      await fetch('/api/send-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientName: form.name,
+          clientEmail: form.email,
+          clientPhone: form.phone,
+          serviceTitle: service.title,
+          sessionDate: formatDate(selected.date),
+          sessionTime: selected.time,
+          notes: intakeSummary,
+        }),
+      })
 
-        setDone(true)
-      }
+      setDone(true)
     } catch (err) {
       setError('Something went wrong. Please try again.')
     }
@@ -140,6 +126,7 @@ export default function BookingPage() {
 
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '4rem 2rem' }}>
 
+        {/* Progress */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3rem' }}>
           {['Select service', 'Pick a time', 'Your details'].map((label, i) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -150,6 +137,7 @@ export default function BookingPage() {
           ))}
         </div>
 
+        {/* Step 1 */}
         {step === 1 && (
           <div>
             <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#0D0D0D', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>What can Dr. Terracciano help you with?</h1>
@@ -160,9 +148,7 @@ export default function BookingPage() {
                   style={{ padding: '1.5rem', border: selected.service === s.id ? '1.5px solid #5C2D82' : '0.5px solid rgba(0,0,0,0.12)', borderRadius: '8px', background: selected.service === s.id ? '#F2EBF8' : '#fff', cursor: 'pointer', transition: 'all 0.15s' }}>
                   <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '4px' }}>{s.title}</div>
                   <div style={{ fontSize: '13px', color: '#888', lineHeight: 1.6 }}>{s.description}</div>
-                  {s.id === 'discovery' && (
-                    <div style={{ marginTop: '8px', display: 'inline-block', background: '#F2EBF8', color: '#5C2D82', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '4px 10px', borderRadius: '100px' }}>Complimentary · 30 min</div>
-                  )}
+                  {s.id === 'discovery' && <div style={{ marginTop: '8px', display: 'inline-block', background: '#F2EBF8', color: '#5C2D82', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '4px 10px', borderRadius: '100px' }}>Complimentary · 30 min</div>}
                 </div>
               ))}
             </div>
@@ -173,6 +159,7 @@ export default function BookingPage() {
           </div>
         )}
 
+        {/* Step 2 */}
         {step === 2 && (
           <div>
             <button onClick={() => setStep(1)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#888', fontSize: '13px', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
@@ -213,30 +200,32 @@ export default function BookingPage() {
           </div>
         )}
 
+        {/* Step 3 */}
         {step === 3 && (
           <div>
             <button onClick={() => setStep(2)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#888', fontSize: '13px', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
               <ArrowLeft size={14} /> Back
             </button>
             <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#0D0D0D', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Your details</h1>
-            <p style={{ fontSize: '14px', color: '#888', marginBottom: '2.5rem' }}>Almost there — just a few details to confirm your booking.</p>
+            <p style={{ fontSize: '14px', color: '#888', marginBottom: '2.5rem' }}>Please complete the intake form so Dr. Terracciano can prepare for your session.</p>
 
+            {/* Booking summary */}
             <div style={{ background: '#F2EBF8', border: '0.5px solid rgba(92,45,130,0.15)', borderRadius: '8px', padding: '1.5rem', marginBottom: '2rem' }}>
               <div style={{ fontSize: '13px', fontWeight: 500, color: '#3B1A55', marginBottom: '4px' }}>{service.title}</div>
               <div style={{ fontSize: '13px', color: '#9B6BBD', marginBottom: '12px' }}>{formatDate(selected.date)} at {selected.time} · via Zoom</div>
               {service.price > 0 ? (
                 <>
                   <div style={{ fontSize: '22px', fontWeight: 500, color: '#5C2D82', marginBottom: '6px' }}>${service.price}</div>
-                  <div style={{ fontSize: '12px', color: '#9B6BBD', lineHeight: 1.6 }}>
-                    All sessions are billed at a minimum of 1.5 hours (60 min session + 30 min planning). Payment is collected securely via Stripe.
-                  </div>
+                  <div style={{ fontSize: '12px', color: '#9B6BBD', lineHeight: 1.6 }}>All sessions are billed at a minimum of 1.5 hours (60 min session + 30 min planning).</div>
                 </>
               ) : (
                 <div style={{ fontSize: '16px', fontWeight: 500, color: '#5C2D82' }}>Complimentary · No charge</div>
               )}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '480px' }}>
+            {/* Contact info */}
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#0D0D0D', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '1rem' }}>Contact Information</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '540px', marginBottom: '2rem' }}>
               {[
                 { label: 'Full name', key: 'name', type: 'text', placeholder: 'Your name', required: true },
                 { label: 'Email address', key: 'email', type: 'email', placeholder: 'your@email.com', required: true },
@@ -248,26 +237,42 @@ export default function BookingPage() {
                     style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box' }} />
                 </div>
               ))}
+            </div>
+
+            {/* Intake survey */}
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#0D0D0D', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Intake Survey</div>
+            <p style={{ fontSize: '13px', color: '#888', marginBottom: '1.5rem' }}>This helps Dr. Terracciano prepare a personalized, high-impact session for you.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '540px', marginBottom: '2rem' }}>
               <div>
-                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Notes (optional)</label>
-                <textarea placeholder="Tell Dr. Terracciano a little about what you're hoping to work on..." value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })}
-                  style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box', minHeight: '100px', resize: 'vertical' }} />
+                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Learner's age or grade level *</label>
+                <input type="text" placeholder="e.g. 8 years old, 3rd grade" value={intake.learner_age} onChange={e => setIntake({ ...intake, learner_age: e.target.value })}
+                  style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Current school situation *</label>
+                <input type="text" placeholder="e.g. Public school, homeschool, private school, college" value={intake.school_situation} onChange={e => setIntake({ ...intake, school_situation: e.target.value })}
+                  style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Main challenges or concerns *</label>
+                <textarea placeholder="What are the biggest challenges you're facing right now?" value={intake.main_challenges} onChange={e => setIntake({ ...intake, main_challenges: e.target.value })}
+                  style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box', minHeight: '90px', resize: 'vertical' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Goals for working together *</label>
+                <textarea placeholder="What would success look like for you?" value={intake.goals} onChange={e => setIntake({ ...intake, goals: e.target.value })}
+                  style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box', minHeight: '90px', resize: 'vertical' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>How did you hear about Dr. Terracciano?</label>
+                <input type="text" placeholder="e.g. Google, referral, social media" value={intake.heard_about} onChange={e => setIntake({ ...intake, heard_about: e.target.value })}
+                  style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Additional notes (optional)</label>
+                <textarea placeholder="Anything else you'd like Dr. Terracciano to know?" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })}
+                  style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box', minHeight: '80px', resize: 'vertical' }} />
               </div>
             </div>
 
-            {error && <div style={{ marginTop: '1rem', padding: '10px 14px', background: '#FDF2F2', border: '0.5px solid rgba(220,50,50,0.2)', borderRadius: '6px', fontSize: '13px', color: '#9B2B2B', maxWidth: '480px' }}>{error}</div>}
-
-            <button onClick={handleBook} disabled={loading}
-              style={{ marginTop: '2rem', background: loading ? '#9B6BBD' : '#5C2D82', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '3px', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {loading ? 'Processing...' : service.price === 0 ? 'Confirm free booking' : `Continue to payment · $${service.price}`}
-              {!loading && <ArrowRight size={14} />}
-            </button>
-            <p style={{ fontSize: '12px', color: '#aaa', marginTop: '1rem' }}>
-              {service.price > 0 ? 'You will be redirected to Stripe to complete payment securely.' : 'No payment required for discovery calls.'}
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
+            {error && <div style={{ marginTop: '1rem', padding: '10px 14px', background: '#FDF2F2', border: '0.5px solid rgba(220,50,50,0.2)', borderRadius: '6px', fontSize: '13px', color: '#9B2B2B', maxWidth: '540px' }}>{erro
