@@ -4,6 +4,7 @@ import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import BookingPage from './BookingPage'
+import BookingConfirmed from './BookingConfirmed'
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<ClarissaWebsite />} />
         <Route path="/book" element={<BookingPage />} />
+        <Route path="/booking-confirmed" element={<BookingConfirmed />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route
           path="/admin/dashboard"
@@ -24,4 +26,3 @@ export default function App() {
     </BrowserRouter>
   )
 }
- 
