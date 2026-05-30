@@ -52,38 +52,71 @@ export default function BookingPage() {
     try {
       const intakeSummary = `AGE: ${intake.learner_age || 'Not provided'}\nSCHOOL SITUATION: ${intake.school_situation || 'Not provided'}\nMAIN CHALLENGES: ${intake.main_challenges || 'Not provided'}\nGOALS: ${intake.goals || 'Not provided'}\nHEARD ABOUT US: ${intake.heard_about || 'Not provided'}\nADDITIONAL NOTES: ${form.notes || 'None'}`
 
-      const { error: dbError } = await supabase.from('bookings').insert({
-        client_name: form.name,
-        client_email: form.email,
-        client_phone: form.phone,
-        service_type: service.title,
-        session_date: selected.date.toISOString().split('T')[0],
-        session_time: selected.time,
-        duration_minutes: service.id === 'discovery' ? 30 : 90,
-        amount_cents: service.price * 100,
-        payment_status: service.price === 0 ? 'free' : 'pending',
-        notes: intakeSummary,
-        status: 'confirmed',
-      })
-      if (dbError) throw dbError
-
-      await fetch('/api/send-notification', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          clientName: form.name,
-          clientEmail: form.email,
-          clientPhone: form.phone,
-          serviceTitle: service.title,
-          sessionDate: formatDate(selected.date),
-          sessionTime: selected.time,
+      if (service.price > 0) {
+        await supabase.from('bookings').insert({
+          client_name: form.name,
+          client_email: form.email,
+          client_phone: form.phone,
+          service_type: service.title,
+          session_date: selected.date.toISOString().split('T')[0],
+          session_time: selected.time,
+          duration_minutes: 90,
+          amount_cents: service.price * 100,
+          payment_status: 'pending',
           notes: intakeSummary,
-        }),
-      })
+          status: 'pending_payment',
+        })
 
-      setDone(true)
+        const response = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            serviceTitle: service.title,
+            amount: service.price * 100,
+            clientEmail: form.email,
+            sessionDate: formatDate(selected.date),
+            sessionTime: selected.time,
+          }),
+        })
+        const data = await response.json()
+        if (data.url) {
+          window.location.href = data.url
+        } else {
+          throw new Error(data.error || 'No checkout URL returned')
+        }
+      } else {
+        const { error: dbError } = await supabase.from('bookings').insert({
+          client_name: form.name,
+          client_email: form.email,
+          client_phone: form.phone,
+          service_type: service.title,
+          session_date: selected.date.toISOString().split('T')[0],
+          session_time: selected.time,
+          duration_minutes: 30,
+          amount_cents: 0,
+          payment_status: 'free',
+          notes: intakeSummary,
+          status: 'confirmed',
+        })
+        if (dbError) throw dbError
+
+        await fetch('/api/send-notification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clientName: form.name,
+            clientEmail: form.email,
+            clientPhone: form.phone,
+            serviceTitle: service.title,
+            sessionDate: formatDate(selected.date),
+            sessionTime: selected.time,
+            notes: intakeSummary,
+          }),
+        })
+        setDone(true)
+      }
     } catch (err) {
-      setError('Something went wrong. Please try again.')
+      setError(err.message || 'Something went wrong. Please try again.')
     }
     setLoading(false)
   }
@@ -257,11 +290,11 @@ export default function BookingPage() {
 
             <button onClick={handleBook} disabled={loading}
               style={{ marginTop: '2rem', background: loading ? '#9B6BBD' : '#5C2D82', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '3px', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {loading ? 'Confirming...' : service.price === 0 ? 'Confirm free booking' : `Confirm & pay $${service.price}`}
+              {loading ? 'Processing...' : service.price === 0 ? 'Confirm free booking' : `Continue to payment · $${service.price}`}
               {!loading && <ArrowRight size={14} />}
             </button>
             <p style={{ fontSize: '12px', color: '#aaa', marginTop: '1rem' }}>
-              {service.price > 0 ? 'Payment collected securely via Stripe at confirmation.' : 'No payment required for discovery calls.'}
+              {service.price > 0 ? 'You will be redirected to Stripe to complete payment securely.' : 'No payment required for discovery calls.'}
             </p>
           </div>
         )}
