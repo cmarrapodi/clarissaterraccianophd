@@ -337,15 +337,12 @@ export default function ClarissaWebsite() {
       </section>
 
       <footer style={{ borderTop: "0.5px solid rgba(0,0,0,0.09)", padding: "2rem 2.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-       <div style={{ fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: "8px" }}>
-  Clarissa Terracciano
-  <a href="/admin" style={{ fontSize: "16px", color: "#0D0D0D", textDecoration: "none" }}>☮</a>
-</div>
-        <div style={{ fontSize: "12px", color: "#aaa", letterSpacing: "0.04em" }}>Learning · Literacy · Special Education · Curriculum · EdTech · Policy</div>
-        <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-          <div style={{ fontSize: "12px", color: "#aaa" }}>© 2026 Educational Consulting</div>
-          <a href="/admin" style={{ fontSize: "14px", color: "#0D0D0D", textDecoration: "none", marginLeft: "12px" }}>☮</a>
+        <div style={{ fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: "8px" }}>
+          Clarissa Terracciano
+          <a href="/admin" style={{ fontSize: "16px", color: "#0D0D0D", textDecoration: "none" }}>☮</a>
         </div>
+        <div style={{ fontSize: "12px", color: "#aaa", letterSpacing: "0.04em" }}>Learning · Literacy · Special Education · Curriculum · EdTech · Policy</div>
+        <div style={{ fontSize: "12px", color: "#aaa" }}>© 2026 Educational Consulting</div>
       </footer>
     </div>
   );
