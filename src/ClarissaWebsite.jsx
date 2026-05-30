@@ -85,7 +85,7 @@ function MarqueeStrip() {
   );
 }
 
-function SectionLabel({ children, light = false }) {
+function SectionLabel({ children }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}>
       <div style={{ width: "20px", height: "1.5px", background: "#9B6BBD", borderRadius: "2px", flexShrink: 0 }} />
@@ -102,7 +102,7 @@ function ServiceModal({ service, onClose }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
-      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}
     >
       <motion.div
         initial={{ opacity: 0, y: 32, scale: 0.96 }}
@@ -200,7 +200,7 @@ export default function ClarissaWebsite() {
       <section id="about" style={{ padding: "6rem 2.5rem", textAlign: "center" }}>
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }} variants={stagger}>
           <motion.div variants={fadeUp} style={{ display: "flex", justifyContent: "center" }}><SectionLabel>About Clarissa</SectionLabel></motion.div>
-          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(28px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#0D0D0D", marginBottom: "1.5rem", maxWidth: "560px", margin: "0 auto 1.5rem" }}>
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(28px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#0D0D0D", maxWidth: "560px", margin: "0 auto 1.5rem" }}>
             A career built on{" "}<em style={{ fontStyle: "italic", fontWeight: 300, color: "#5C2D82" }}>transforming</em>{" "}how people learn.
           </motion.h2>
           <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 1.5rem" }}>
@@ -274,9 +274,9 @@ export default function ClarissaWebsite() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.1 }}
                   transition={{ duration: 0.5, delay: index * 0.04 }}
-                  whileHover={{ background: "rgba(92,45,130,0.3)", cursor: "pointer" }}
+                  whileHover={{ background: "rgba(92,45,130,0.3)" }}
                   onClick={() => setSelectedService(service)}
-                  style={{ background: "#1A0F24", padding: "2rem", transition: "background 0.2s", borderRight: (index + 1) % 3 !== 0 ? "0.5px solid rgba(255,255,255,0.07)" : "none", borderBottom: index < services.length - 3 ? "0.5px solid rgba(255,255,255,0.07)" : "none" }}
+                  style={{ background: "#1A0F24", padding: "2rem", cursor: "pointer", transition: "background 0.2s", borderRight: (index + 1) % 3 !== 0 ? "0.5px solid rgba(255,255,255,0.07)" : "none", borderBottom: index < services.length - 3 ? "0.5px solid rgba(255,255,255,0.07)" : "none" }}
                 >
                   <div style={{ width: "40px", height: "40px", borderRadius: "8px", background: "rgba(92,45,130,0.35)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1rem" }}>
                     <Icon size={18} color="#F2EBF8" />
@@ -300,7 +300,7 @@ export default function ClarissaWebsite() {
       <section style={{ padding: "6rem 2.5rem", background: "#fff" }}>
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }} variants={stagger} style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
           <motion.div variants={fadeUp} style={{ display: "flex", justifyContent: "center" }}><SectionLabel>My approach</SectionLabel></motion.div>
-          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(28px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#0D0D0D", marginBottom: "3rem", maxWidth: "500px", margin: "0 auto 3rem" }}>
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(28px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#0D0D0D", maxWidth: "500px", margin: "0 auto 3rem" }}>
             Strategic expertise for{" "}<em style={{ fontStyle: "italic", fontWeight: 300, color: "#5C2D82" }}>meaningful</em> educational growth.
           </motion.h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", textAlign: "left" }}>
