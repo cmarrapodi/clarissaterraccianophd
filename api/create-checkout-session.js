@@ -5,7 +5,13 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  
+  if (!stripeKey) {
+    return res.status(500).json({ error: 'Stripe key not configured' });
+  }
+
+  const stripe = new Stripe(stripeKey, { apiVersion: '2023-10-16' });
   const { serviceTitle, amount, clientEmail, sessionDate, sessionTime } = req.body;
 
   try {
@@ -32,7 +38,7 @@ module.exports = async function handler(req, res) {
 
     res.status(200).json({ url: session.url });
   } catch (error) {
-    console.error('Stripe error:', error);
+    console.error('Stripe error:', error.message);
     res.status(500).json({ error: error.message });
   }
 }
