@@ -48,6 +48,7 @@ const allServices = [
 const defaultTimeSlots = ['9:00 AM', '10:30 AM', '12:00 PM', '1:30 PM', '3:00 PM', '4:30 PM']
 const defaultAvailableDays = [1, 2, 3, 4, 5]
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December']
 const inputStyle = { width: '100%', padding: '10px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box' }
 const labelStyle = { fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }
 const cardStyle = { background: '#fff', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '1.5rem', marginBottom: '1.5rem' }
@@ -67,6 +68,8 @@ export default function AdminDashboard() {
   const [services, setServices] = useState(allServices)
   const [editingService, setEditingService] = useState(null)
   const [serviceForm, setServiceForm] = useState({})
+  const [calendarDate, setCalendarDate] = useState(new Date())
+  const [calendarView, setCalendarView] = useState('month')
   const navigate = useNavigate()
 
   const handleLogout = async () => {
@@ -139,6 +142,22 @@ export default function AdminDashboard() {
     return acc
   }, {})
 
+  const getBookingsForDate = (date) => {
+    const dateStr = date.toISOString().split('T')[0]
+    return bookings.filter(b => b.session_date === dateStr)
+  }
+
+  const getCalendarDays = () => {
+    const year = calendarDate.getFullYear()
+    const month = calendarDate.getMonth()
+    const firstDay = new Date(year, month, 1).getDay()
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const days = []
+    for (let i = 0; i < firstDay; i++) days.push(null)
+    for (let i = 1; i <= daysInMonth; i++) days.push(new Date(year, month, i))
+    return days
+  }
+
   const BookingRow = ({ b, dim }) => (
     <div onClick={() => setSelectedBooking(b)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)', cursor: 'pointer', opacity: dim ? 0.65 : 1 }}>
       <div>
@@ -155,6 +174,9 @@ export default function AdminDashboard() {
       </div>
     </div>
   )
+
+  const calendarDays = getCalendarDays()
+  const today = new Date()
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#F9F6F2', fontFamily: 'inherit' }}>
@@ -217,57 +239,100 @@ export default function AdminDashboard() {
           </div>
         </>}
 
-        {activeNav === 'calendar' && <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-          <div style={cardStyle}>
-            <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Available Days</div>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '1rem' }}>
-              {dayNames.map((day, i) => (
-                <button key={i} onClick={() => setAvailableDays(p => p.includes(i) ? p.filter(d => d !== i) : [...p, i])} style={{ padding: '8px 16px', borderRadius: '6px', border: '0.5px solid rgba(0,0,0,0.15)', background: availableDays.includes(i) ? '#5C2D82' : '#fff', color: availableDays.includes(i) ? '#fff' : '#666', fontSize: '13px', cursor: 'pointer' }}>{day}</button>
-              ))}
-            </div>
-            <div style={{ fontSize: '12px', color: '#888' }}>Available: {availableDays.map(d => dayNames[d]).join(', ')}</div>
-          </div>
-          <div style={cardStyle}>
-            <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Time Slots</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '1rem' }}>
-              {timeSlots.map(slot => (
-                <div key={slot} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#F9F6F2', borderRadius: '6px' }}>
-                  <span style={{ fontSize: '14px' }}>{slot}</span>
-                  <button onClick={() => setTimeSlots(p => p.filter(s => s !== slot))} style={{ background: 'none', border: 'none', color: '#9B2B2B', fontSize: '12px', cursor: 'pointer' }}>Remove</button>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <input type="text" placeholder="e.g. 2:00 PM" value={newTimeSlot} onChange={e => setNewTimeSlot(e.target.value)} style={{ ...inputStyle, flex: 1 }} />
-              <button onClick={() => { if (newTimeSlot) { setTimeSlots(p => [...p, newTimeSlot]); setNewTimeSlot('') } }} style={{ padding: '10px 16px', background: '#5C2D82', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', cursor: 'pointer' }}>Add</button>
-            </div>
-          </div>
-          <div style={cardStyle}>
-            <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Blocked Dates</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '1rem' }}>
-              {blockedDates.length === 0 ? <div style={{ color: '#aaa', fontSize: '13px' }}>No blocked dates.</div> : blockedDates.map(date => (
-                <div key={date} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#FDF2F2', borderRadius: '6px' }}>
-                  <span style={{ fontSize: '14px', color: '#9B2B2B' }}>{formatDate(date)}</span>
-                  <button onClick={() => setBlockedDates(p => p.filter(d => d !== date))} style={{ background: 'none', border: 'none', color: '#9B2B2B', fontSize: '12px', cursor: 'pointer' }}>Remove</button>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <input type="date" value={newBlockedDate} onChange={e => setNewBlockedDate(e.target.value)} style={{ ...inputStyle, flex: 1 }} />
-              <button onClick={() => { if (newBlockedDate) { setBlockedDates(p => [...p, newBlockedDate]); setNewBlockedDate('') } }} style={{ padding: '10px 16px', background: '#5C2D82', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', cursor: 'pointer' }}>Block</button>
-            </div>
-          </div>
-          <div style={cardStyle}>
-            <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Upcoming Bookings</div>
-            {upcomingBookings.length === 0 ? <div style={{ color: '#aaa', fontSize: '13px' }}>No upcoming bookings.</div> : upcomingBookings.slice(0, 6).map(b => (
-              <div key={b.id} style={{ padding: '8px 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
-                <div style={{ fontSize: '13px', fontWeight: 500 }}>{b.client_name}</div>
-                <div style={{ fontSize: '12px', color: '#5C2D82' }}>{formatDate(b.session_date)} at {b.session_time}</div>
-                <div style={{ fontSize: '12px', color: '#888' }}>{b.service_type}</div>
+        {activeNav === 'calendar' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <button onClick={() => { const d = new Date(calendarDate); d.setMonth(d.getMonth() - 1); setCalendarDate(d) }} style={{ padding: '6px 12px', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}>‹</button>
+                <div style={{ fontSize: '18px', fontWeight: 500, color: '#0D0D0D', minWidth: '180px', textAlign: 'center' }}>{monthNames[calendarDate.getMonth()]} {calendarDate.getFullYear()}</div>
+                <button onClick={() => { const d = new Date(calendarDate); d.setMonth(d.getMonth() + 1); setCalendarDate(d) }} style={{ padding: '6px 12px', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}>›</button>
+                <button onClick={() => setCalendarDate(new Date())} style={{ padding: '6px 14px', background: '#F2EBF8', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', color: '#5C2D82' }}>Today</button>
               </div>
-            ))}
+              <div style={{ fontSize: '13px', color: '#888', background: '#F2EBF8', padding: '6px 14px', borderRadius: '6px', color: '#5C2D82' }}>
+                {upcomingBookings.length} upcoming sessions
+              </div>
+            </div>
+
+            <div style={{ background: '#fff', border: '0.5px solid rgba(0,0,0,0.08)', borderRadius: '10px', overflow: 'hidden', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: '#1A0F24' }}>
+                {dayNames.map(d => (
+                  <div key={d} style={{ padding: '12px', textAlign: 'center', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>{d}</div>
+                ))}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
+                {calendarDays.map((day, i) => {
+                  if (!day) return <div key={i} style={{ minHeight: '100px', background: '#fafafa', borderRight: '0.5px solid rgba(0,0,0,0.06)', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }} />
+                  const dayBookings = getBookingsForDate(day)
+                  const isToday = day.toDateString() === today.toDateString()
+                  const isWeekend = day.getDay() === 0 || day.getDay() === 6
+                  return (
+                    <div key={i} style={{ minHeight: '100px', padding: '8px', borderRight: '0.5px solid rgba(0,0,0,0.06)', borderBottom: '0.5px solid rgba(0,0,0,0.06)', background: isWeekend ? '#fafafa' : '#fff', position: 'relative' }}>
+                      <div style={{ fontSize: '13px', fontWeight: isToday ? 700 : 400, color: isToday ? '#fff' : isWeekend ? '#bbb' : '#0D0D0D', background: isToday ? '#5C2D82' : 'transparent', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '4px' }}>
+                        {day.getDate()}
+                      </div>
+                      {dayBookings.map(b => (
+                        <div key={b.id} onClick={() => setSelectedBooking(b)} style={{ padding: '2px 6px', borderRadius: '3px', fontSize: '10px', marginBottom: '2px', cursor: 'pointer', background: statusColors[b.status]?.bg || '#F2EBF8', color: statusColors[b.status]?.color || '#5C2D82', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>
+                          {b.session_time} {b.client_name.split(' ')[0]}
+                        </div>
+                      ))}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div style={cardStyle}>
+                <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Available Days</div>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                  {dayNames.map((day, i) => (
+                    <button key={i} onClick={() => setAvailableDays(p => p.includes(i) ? p.filter(d => d !== i) : [...p, i])} style={{ padding: '8px 16px', borderRadius: '6px', border: '0.5px solid rgba(0,0,0,0.15)', background: availableDays.includes(i) ? '#5C2D82' : '#fff', color: availableDays.includes(i) ? '#fff' : '#666', fontSize: '13px', cursor: 'pointer' }}>{day}</button>
+                  ))}
+                </div>
+                <div style={{ fontSize: '12px', color: '#888' }}>Available: {availableDays.map(d => dayNames[d]).join(', ')}</div>
+              </div>
+              <div style={cardStyle}>
+                <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Time Slots</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '1rem' }}>
+                  {timeSlots.map(slot => (
+                    <div key={slot} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#F9F6F2', borderRadius: '6px' }}>
+                      <span style={{ fontSize: '14px' }}>{slot}</span>
+                      <button onClick={() => setTimeSlots(p => p.filter(s => s !== slot))} style={{ background: 'none', border: 'none', color: '#9B2B2B', fontSize: '12px', cursor: 'pointer' }}>Remove</button>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input type="text" placeholder="e.g. 2:00 PM" value={newTimeSlot} onChange={e => setNewTimeSlot(e.target.value)} style={{ ...inputStyle, flex: 1 }} />
+                  <button onClick={() => { if (newTimeSlot) { setTimeSlots(p => [...p, newTimeSlot]); setNewTimeSlot('') } }} style={{ padding: '10px 16px', background: '#5C2D82', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', cursor: 'pointer' }}>Add</button>
+                </div>
+              </div>
+              <div style={cardStyle}>
+                <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Blocked Dates</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '1rem' }}>
+                  {blockedDates.length === 0 ? <div style={{ color: '#aaa', fontSize: '13px' }}>No blocked dates.</div> : blockedDates.map(date => (
+                    <div key={date} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: '#FDF2F2', borderRadius: '6px' }}>
+                      <span style={{ fontSize: '14px', color: '#9B2B2B' }}>{formatDate(date)}</span>
+                      <button onClick={() => setBlockedDates(p => p.filter(d => d !== date))} style={{ background: 'none', border: 'none', color: '#9B2B2B', fontSize: '12px', cursor: 'pointer' }}>Remove</button>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input type="date" value={newBlockedDate} onChange={e => setNewBlockedDate(e.target.value)} style={{ ...inputStyle, flex: 1 }} />
+                  <button onClick={() => { if (newBlockedDate) { setBlockedDates(p => [...p, newBlockedDate]); setNewBlockedDate('') } }} style={{ padding: '10px 16px', background: '#5C2D82', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '13px', cursor: 'pointer' }}>Block</button>
+                </div>
+              </div>
+              <div style={cardStyle}>
+                <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '0.5rem' }}>Google Calendar Sync</div>
+                <div style={{ fontSize: '13px', color: '#888', marginBottom: '1.5rem', lineHeight: 1.6 }}>Connect Google Calendar to automatically sync bookings and send invites to clients.</div>
+                <button style={{ width: '100%', padding: '12px', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '8px', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', color: '#0D0D0D', fontWeight: 500 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                  Connect Google Calendar
+                </button>
+                <div style={{ fontSize: '11px', color: '#aaa', marginTop: '8px', textAlign: 'center' }}>Google Calendar OAuth setup required — coming next phase</div>
+              </div>
+            </div>
           </div>
-        </div>}
+        )}
 
         {activeNav === 'services' && <div style={cardStyle}>
           <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Manage Services</div>
@@ -294,10 +359,7 @@ export default function AdminDashboard() {
             <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Payment History</div>
             {bookings.length === 0 ? <div style={{ color: '#aaa' }}>No payments yet.</div> : bookings.map(b => (
               <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
-                <div>
-                  <div style={{ fontSize: '14px', fontWeight: 500 }}>{b.client_name}</div>
-                  <div style={{ fontSize: '12px', color: '#888' }}>{b.service_type} · {formatDate(b.session_date)}</div>
-                </div>
+                <div><div style={{ fontSize: '14px', fontWeight: 500 }}>{b.client_name}</div><div style={{ fontSize: '12px', color: '#888' }}>{b.service_type} · {formatDate(b.session_date)}</div></div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   <div style={{ fontSize: '15px', fontWeight: 500 }}>{formatMoney(b.amount_cents)}</div>
                   <div style={{ padding: '4px 10px', borderRadius: '100px', fontSize: '11px', background: statusColors[b.payment_status]?.bg || '#f5f5f5', color: statusColors[b.payment_status]?.color || '#666' }}>{b.payment_status || 'unknown'}</div>
@@ -342,12 +404,28 @@ export default function AdminDashboard() {
             })()}
           </div>
           <div style={cardStyle}>
+            <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '0.5rem' }}>Site Visitors & Location</div>
+            <div style={{ fontSize: '13px', color: '#888', marginBottom: '1.5rem', lineHeight: 1.6 }}>Real-time visitor tracking with location data requires Vercel Analytics or Google Analytics.</div>
+            <div style={{ background: '#F9F6F2', borderRadius: '8px', padding: '1.25rem', marginBottom: '1rem' }}>
+              <div style={{ fontSize: '13px', fontWeight: 500, color: '#0D0D0D', marginBottom: '8px' }}>Enable Vercel Analytics (Free)</div>
+              <div style={{ fontSize: '12px', color: '#888', lineHeight: 1.6, marginBottom: '12px' }}>Go to Vercel → your project → Analytics tab → Enable. You'll get page views, visitors, and location data automatically.</div>
+              <a href="https://vercel.com/analytics" target="_blank" rel="noreferrer" style={{ display: 'inline-block', padding: '8px 16px', background: '#0D0D0D', color: '#fff', borderRadius: '6px', fontSize: '12px', textDecoration: 'none', cursor: 'pointer' }}>Enable Vercel Analytics →</a>
+            </div>
+            <div style={{ background: '#F9F6F2', borderRadius: '8px', padding: '1.25rem' }}>
+              <div style={{ fontSize: '13px', fontWeight: 500, color: '#0D0D0D', marginBottom: '8px' }}>Or use Google Analytics (Free)</div>
+              <div style={{ fontSize: '12px', color: '#888', lineHeight: 1.6 }}>Add your Google Analytics tracking ID to the site for detailed visitor location, behavior, and traffic source data.</div>
+            </div>
+          </div>
+          <div style={{ ...cardStyle, gridColumn: '1 / -1' }}>
             <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '1.5rem' }}>Revenue Summary</div>
-            {[{ label: 'Total bookings', value: bookings.length }, { label: 'Paid sessions', value: bookings.filter(b => b.amount_cents > 0).length }, { label: 'Free sessions', value: bookings.filter(b => b.amount_cents === 0).length }, { label: 'Confirmed revenue', value: `$${(totalRevenue / 100).toFixed(0)}` }, { label: 'Pending revenue', value: `$${(pendingRevenue / 100).toFixed(0)}` }].map(row => (
-              <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '0.5px solid rgba(0,0,0,0.06)' }}>
-                <span style={{ fontSize: '13px', color: '#666' }}>{row.label}</span><span style={{ fontSize: '13px', fontWeight: 500 }}>{row.value}</span>
-              </div>
-            ))}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem' }}>
+              {[{ label: 'Total bookings', value: bookings.length }, { label: 'Paid sessions', value: bookings.filter(b => b.amount_cents > 0).length }, { label: 'Free sessions', value: bookings.filter(b => b.amount_cents === 0).length }, { label: 'Confirmed revenue', value: `$${(totalRevenue / 100).toFixed(0)}` }, { label: 'Pending revenue', value: `$${(pendingRevenue / 100).toFixed(0)}` }].map(row => (
+                <div key={row.label} style={{ textAlign: 'center', padding: '1rem', background: '#F9F6F2', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '24px', fontWeight: 300, color: '#5C2D82', marginBottom: '4px' }}>{row.value}</div>
+                  <div style={{ fontSize: '12px', color: '#888' }}>{row.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>}
       </main>
