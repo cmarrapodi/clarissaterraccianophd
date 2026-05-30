@@ -12,6 +12,7 @@ const services = [
   { id: 'dissertation', title: 'Dissertation & Research Consulting', duration: '90 min', price: 375, description: 'Expert guidance for doctoral students and researchers.' },
   { id: 'policy', title: 'Educational Policy & EdTech Consulting', duration: '90 min', price: 525, description: 'Strategic consulting at the intersection of education, policy, and technology.' },
   { id: 'org', title: 'School / Organizational Consulting', duration: '90 min', price: 525, description: 'Systems-level consulting for schools and educational organizations.' },
+  { id: 'retainer', title: 'Monthly Family Educational Retainer', duration: 'Ongoing', price: 1500, description: 'Ongoing monthly advisory support for families.' },
 ]
 
 const timeSlots = ['9:00 AM', '10:30 AM', '12:00 PM', '1:30 PM', '3:00 PM', '4:30 PM']
@@ -43,22 +44,72 @@ export default function BookingPage() {
     if (!form.name || !form.email) { setError('Please fill in your name and email.'); return }
     setLoading(true)
     setError('')
+
     try {
-      const { error } = await supabase.from('bookings').insert({
-        client_name: form.name,
-        client_email: form.email,
-        client_phone: form.phone,
-        service_type: service.title,
-        session_date: selected.date.toISOString().split('T')[0],
-        session_time: selected.time,
-        duration_minutes: service.id === 'discovery' ? 30 : 90,
-        amount_cents: service.price * 100,
-        payment_status: service.price === 0 ? 'free' : 'pending',
-        notes: form.notes,
-        status: 'confirmed',
-      })
-      if (error) throw error
-      setDone(true)
+      if (service.price > 0) {
+        await supabase.from('bookings').insert({
+          client_name: form.name,
+          client_email: form.email,
+          client_phone: form.phone,
+          service_type: service.title,
+          session_date: selected.date.toISOString().split('T')[0],
+          session_time: selected.time,
+          duration_minutes: 90,
+          amount_cents: service.price * 100,
+          payment_status: 'pending',
+          notes: form.notes,
+          status: 'pending_payment',
+        })
+
+        const response = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            serviceTitle: service.title,
+            amount: service.price * 100,
+            clientEmail: form.email,
+            sessionDate: formatDate(selected.date),
+            sessionTime: selected.time,
+          }),
+        })
+        const data = await response.json()
+        if (data.url) {
+          window.location.href = data.url
+        } else {
+          throw new Error('No checkout URL')
+        }
+      } else {
+        await supabase.from('bookings').insert({
+          client_name: form.name,
+          client_email: form.email,
+          client_phone: form.phone,
+          service_type: service.title,
+          session_date: selected.date.toISOString().split('T')[0],
+          session_time: selected.time,
+          duration_minutes: 30,
+          amount_cents: 0,
+          payment_status: 'free',
+          notes: form.notes,
+          status: 'confirmed',
+        })
+
+        // Send email notification
+        await fetch('/api/send-notification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clientName: form.name,
+            clientEmail: form.email,
+            clientPhone: form.phone,
+            serviceTitle: service.title,
+            sessionDate: formatDate(selected.date),
+            sessionTime: selected.time,
+            notes: form.notes,
+          }),
+        })
+
+        setDone(true)
+      }
     } catch (err) {
       setError('Something went wrong. Please try again.')
     }
@@ -89,7 +140,6 @@ export default function BookingPage() {
 
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '4rem 2rem' }}>
 
-        {/* Progress */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3rem' }}>
           {['Select service', 'Pick a time', 'Your details'].map((label, i) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -100,7 +150,6 @@ export default function BookingPage() {
           ))}
         </div>
 
-        {/* Step 1 — Service selection, NO pricing shown */}
         {step === 1 && (
           <div>
             <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#0D0D0D', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>What can Dr. Terracciano help you with?</h1>
@@ -124,7 +173,6 @@ export default function BookingPage() {
           </div>
         )}
 
-        {/* Step 2 — Date & Time */}
         {step === 2 && (
           <div>
             <button onClick={() => setStep(1)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#888', fontSize: '13px', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
@@ -165,7 +213,6 @@ export default function BookingPage() {
           </div>
         )}
 
-        {/* Step 3 — Details + pricing revealed here */}
         {step === 3 && (
           <div>
             <button onClick={() => setStep(2)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#888', fontSize: '13px', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
@@ -174,7 +221,6 @@ export default function BookingPage() {
             <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#0D0D0D', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Your details</h1>
             <p style={{ fontSize: '14px', color: '#888', marginBottom: '2.5rem' }}>Almost there — just a few details to confirm your booking.</p>
 
-            {/* Booking summary with pricing */}
             <div style={{ background: '#F2EBF8', border: '0.5px solid rgba(92,45,130,0.15)', borderRadius: '8px', padding: '1.5rem', marginBottom: '2rem' }}>
               <div style={{ fontSize: '13px', fontWeight: 500, color: '#3B1A55', marginBottom: '4px' }}>{service.title}</div>
               <div style={{ fontSize: '13px', color: '#9B6BBD', marginBottom: '12px' }}>{formatDate(selected.date)} at {selected.time} · via Zoom</div>
@@ -182,7 +228,7 @@ export default function BookingPage() {
                 <>
                   <div style={{ fontSize: '22px', fontWeight: 500, color: '#5C2D82', marginBottom: '6px' }}>${service.price}</div>
                   <div style={{ fontSize: '12px', color: '#9B6BBD', lineHeight: 1.6 }}>
-                    All sessions are billed at a minimum of 1.5 hours (60 min session + 30 min planning and preparation). This rate reflects Dr. Terracciano's standard pricing and is non-negotiable.
+                    All sessions are billed at a minimum of 1.5 hours (60 min session + 30 min planning). Payment is collected securely via Stripe.
                   </div>
                 </>
               ) : (
@@ -213,11 +259,11 @@ export default function BookingPage() {
 
             <button onClick={handleBook} disabled={loading}
               style={{ marginTop: '2rem', background: loading ? '#9B6BBD' : '#5C2D82', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '3px', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {loading ? 'Confirming...' : service.price === 0 ? 'Confirm free booking' : `Confirm & pay $${service.price}`}
+              {loading ? 'Processing...' : service.price === 0 ? 'Confirm free booking' : `Continue to payment · $${service.price}`}
               {!loading && <ArrowRight size={14} />}
             </button>
             <p style={{ fontSize: '12px', color: '#aaa', marginTop: '1rem' }}>
-              {service.price > 0 ? 'Payment collected securely via Stripe at confirmation.' : 'No payment required for discovery calls.'}
+              {service.price > 0 ? 'You will be redirected to Stripe to complete payment securely.' : 'No payment required for discovery calls.'}
             </p>
           </div>
         )}
