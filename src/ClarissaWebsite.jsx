@@ -8,6 +8,7 @@ import {
   Lightbulb,
   CalendarDays,
   Quote,
+  Users,
 } from "lucide-react";
 
 const fadeUp = {
@@ -24,6 +25,14 @@ const expertiseAreas = [
   { num: "01", title: "B.A. Developmental Psychology", school: "Hunter College, City University of New York", description: "A foundational grounding in how children grow, think, and learn — informing every consultation with a deep understanding of child development, cognition, and the psychological dimensions of education." },
   { num: "02", title: "M.A. Inclusive Education", school: "Teachers College, Columbia University", description: "Graduate training at one of the world's foremost schools of education, specializing in inclusive practices and teaching students with disabilities — bridging research and real-world classroom application." },
   { num: "03", title: "Ph.D. Educational Leadership & Policy Studies", school: "University of Denver", description: "Doctoral research examining the policies governing emerging and innovative technology and digital infrastructure in education — positioning Dr. Terracciano at the intersection of educational leadership and the future of learning." },
+];
+
+const specializedTraining = [
+  { title: "Orton-Gillingham", desc: "Multisensory reading instruction — the gold standard structured literacy approach for students with dyslexia and reading differences." },
+  { title: "PAF (Preventing Academic Failure)", desc: "Parts 1 & 2 — Westchester Institute for Human Development's structured literacy program for students with learning disabilities." },
+  { title: "Wilson Reading System®", desc: "A systematic, multisensory structured literacy program for students who have not learned to read and spell with traditional methods." },
+  { title: "Handwriting Without Tears®", desc: "A developmentally based handwriting curriculum that makes learning to write fun, easy, and accessible for all learners." },
+  { title: "200-Hour Registered Yoga Teacher (RYT-200)", desc: "A fully certified yoga teacher training that deepens Dr. Terracciano's holistic approach to learning — bringing mindfulness, body awareness, and regulated nervous systems into every educational space she enters." },
 ];
 
 const heroTags = ["Special Education", "Literacy", "Blockchain & EdTech", "Homeschool Planning"];
@@ -72,6 +81,7 @@ export default function ClarissaWebsite() {
         <div style={{ display: "flex", gap: "2rem", fontSize: "13px", color: "#666" }}>
           <a href="#about" style={{ color: "inherit", textDecoration: "none" }}>About</a>
           <a href="#services" style={{ color: "inherit", textDecoration: "none" }}>Services</a>
+          <a href="#pods" style={{ color: "inherit", textDecoration: "none" }}>Learning Pods</a>
           <a href="#booking" style={{ color: "inherit", textDecoration: "none" }}>Contact</a>
         </div>
         <button onClick={goToBook} style={{ background: "#5C2D82", color: "#fff", border: "none", padding: "10px 22px", borderRadius: "3px", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}>
@@ -141,7 +151,8 @@ export default function ClarissaWebsite() {
           <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", marginBottom: "4rem" }}>
             Two decades into her career, she pursued her doctorate — earning a Ph.D. in Educational Leadership and Policy Studies, with research focused on the policies shaping emerging technology and digital infrastructure in education. That full arc — from a summer camp in South Florida to the frontier of educational policy — is what she brings to every family, educator, and organization she works with today.
           </motion.p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "0.5px solid rgba(0,0,0,0.1)" }}>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "0.5px solid rgba(0,0,0,0.1)", marginBottom: "5rem" }}>
             {expertiseAreas.map((area, index) => (
               <motion.div key={area.num} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.6, delay: index * 0.1 }}
                 style={{ padding: "2.5rem 2rem", borderRight: index < expertiseAreas.length - 1 ? "0.5px solid rgba(0,0,0,0.1)" : "none" }}>
@@ -149,6 +160,22 @@ export default function ClarissaWebsite() {
                 <div style={{ fontSize: "16px", fontWeight: 500, color: "#0D0D0D", marginBottom: "4px", lineHeight: 1.35 }}>{area.title}</div>
                 <div style={{ fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#9B6BBD", marginBottom: "1rem" }}>{area.school}</div>
                 <div style={{ fontSize: "13px", lineHeight: 1.85, color: "#666" }}>{area.description}</div>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div variants={fadeUp}>
+            <SectionLabel>Specialized Training & Certifications</SectionLabel>
+          </motion.div>
+          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", marginBottom: "2.5rem" }}>
+            Dr. Terracciano holds specialized training in the most respected structured literacy and learning methodologies in the field — equipping her to support the full range of learners, from those who thrive to those who need the most intensive support.
+          </motion.p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
+            {specializedTraining.map((item, index) => (
+              <motion.div key={item.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5, delay: index * 0.1 }}
+                style={{ padding: "1.75rem 2rem", background: "#fff", border: "0.5px solid rgba(92,45,130,0.12)", borderRadius: "8px", borderLeft: "3px solid #5C2D82" }}>
+                <div style={{ fontSize: "15px", fontWeight: 600, color: "#0D0D0D", marginBottom: "6px" }}>{item.title}</div>
+                <div style={{ fontSize: "13px", lineHeight: 1.8, color: "#666" }}>{item.desc}</div>
               </motion.div>
             ))}
           </div>
@@ -176,30 +203,20 @@ export default function ClarissaWebsite() {
             {[
               { title: "Private Educational Consulting", desc: "Personalized 1:1 consulting for families navigating complex educational decisions, learning differences, or academic transitions." },
               { title: "Academic Tutoring", desc: "Expert subject-matter support tailored to your learner's pace, style, and goals — from foundational skills to advanced coursework." },
-              { title: "Intensive Academic Intervention", desc: "Targeted, high-impact sessions for students who need accelerated support in literacy, math, or executive functioning." },
+              { title: "Literacy & Reading Support", desc: "Structured literacy intervention using Orton-Gillingham, Wilson Reading System®, and PAF — evidence-based approaches for all readers including those with dyslexia." },
               { title: "Homeschool Planning & Curriculum Design", desc: "Custom curriculum architecture and learning plans for families building rigorous, joyful homeschool programs." },
               { title: "Educational Advocacy & Parent Strategy", desc: "Empowering parents to navigate IEPs, 504 plans, school systems, and educational rights with confidence and clarity." },
               { title: "Dissertation & Research Consulting", desc: "Expert guidance for doctoral students and researchers navigating qualitative methodology, data analysis, and academic writing." },
               { title: "Educational Policy & EdTech Consulting", desc: "Strategic consulting for organizations, institutions, and founders at the intersection of education, policy, and technology." },
               { title: "School / Organizational Consulting", desc: "Systems-level consulting for schools and educational organizations seeking to improve outcomes, equity, and culture." },
+              { title: "Intensive Academic Intervention", desc: "Targeted, high-impact sessions for students who need accelerated support in literacy, math, or executive functioning." },
+              { title: "Monthly Family Educational Retainer", desc: "Ongoing advisory support for families who want consistent, high-touch educational guidance throughout the school year." },
             ].map((service, index) => (
               <motion.div key={service.title} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.5, delay: index * 0.05 }}
-                style={{ background: "#1A0F24", padding: "2rem", borderBottom: index < 6 ? "0.5px solid rgba(255,255,255,0.07)" : "none", borderRight: index % 2 === 0 ? "0.5px solid rgba(255,255,255,0.07)" : "none" }}>
+                style={{ background: "#1A0F24", padding: "2rem", borderBottom: index < 8 ? "0.5px solid rgba(255,255,255,0.07)" : "none", borderRight: index % 2 === 0 ? "0.5px solid rgba(255,255,255,0.07)" : "none" }}>
                 <div style={{ fontSize: "15px", fontWeight: 500, color: "#fff", marginBottom: "8px" }}>{service.title}</div>
                 <div style={{ fontSize: "13px", lineHeight: 1.8, color: "rgba(255,255,255,0.45)" }}>{service.desc}</div>
               </motion.div>
-            ))}
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "rgba(255,255,255,0.07)", marginBottom: "3rem" }}>
-            {[
-              { title: "Half-Day Consulting", price: "$1,500" },
-              { title: "Full-Day Consulting", price: "$3,000" },
-              { title: "Monthly Family Retainer", price: "From $1,500/mo" },
-            ].map((item, index) => (
-              <div key={item.title} style={{ background: "#1A0F24", padding: "1.5rem 2rem", borderRight: index < 2 ? "0.5px solid rgba(255,255,255,0.07)" : "none" }}>
-                <div style={{ fontSize: "20px", fontWeight: 300, color: "#9B6BBD", marginBottom: "4px" }}>{item.price}</div>
-                <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)" }}>{item.title}</div>
-              </div>
             ))}
           </div>
           <div style={{ textAlign: "center" }}>
@@ -210,7 +227,38 @@ export default function ClarissaWebsite() {
         </motion.div>
       </section>
 
-      <section style={{ padding: "6rem 2.5rem" }}>
+      <section id="pods" style={{ padding: "6rem 2.5rem", background: "#F9F6F2" }}>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }} variants={stagger}>
+          <motion.div variants={fadeUp}><SectionLabel>Learning Pods</SectionLabel></motion.div>
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(28px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#0D0D0D", marginBottom: "1.5rem", maxWidth: "560px" }}>
+            Small-group learning designed to{" "}<em style={{ fontStyle: "italic", fontWeight: 300, color: "#5C2D82" }}>inspire</em> and accelerate.
+          </motion.h2>
+          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", marginBottom: "3rem" }}>
+            Learning Pods are curated small-group sessions where children come together for a structured learning series focused on academic growth, supplemental learning, and intellectual curiosity. Designed by Dr. Terracciano, each pod is intentionally sized to foster collaboration, deepen engagement, and give every child the attention they deserve — all in a warm, rigorous, and joyful environment.
+          </motion.p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", marginBottom: "3rem" }}>
+            {[
+              { icon: "◈", title: "Structured Learning Series", desc: "Each pod follows a carefully designed curriculum arc, building knowledge and skills progressively across sessions." },
+              { icon: "◉", title: "Small Group, Big Impact", desc: "Intentionally small groups ensure every child is seen, supported, and challenged at the right level." },
+              { icon: "◬", title: "Supplemental & Enrichment Focus", desc: "Pods complement school learning or provide enrichment beyond the classroom — tailored to the group's needs and goals." },
+            ].map((item, index) => (
+              <motion.div key={item.title} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.6, delay: index * 0.1 }}
+                style={{ padding: "2rem", background: "#fff", border: "0.5px solid rgba(92,45,130,0.12)", borderRadius: "8px" }}>
+                <div style={{ fontSize: "24px", color: "#5C2D82", marginBottom: "1rem" }}>{item.icon}</div>
+                <div style={{ fontSize: "15px", fontWeight: 500, color: "#0D0D0D", marginBottom: "8px" }}>{item.title}</div>
+                <div style={{ fontSize: "13px", lineHeight: 1.8, color: "#666" }}>{item.desc}</div>
+              </motion.div>
+            ))}
+          </div>
+          <motion.div variants={fadeUp}>
+            <button onClick={goToBook} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#5C2D82", color: "#fff", padding: "14px 30px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer" }}>
+              Enroll in a Learning Pod <ArrowRight size={14} />
+            </button>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      <section style={{ padding: "6rem 2.5rem", background: "#fff" }}>
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }} variants={stagger} style={{ maxWidth: "800px", margin: "0 auto" }}>
           <motion.div variants={fadeUp}><SectionLabel>My approach</SectionLabel></motion.div>
           <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(28px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#0D0D0D", marginBottom: "3rem", maxWidth: "500px" }}>
