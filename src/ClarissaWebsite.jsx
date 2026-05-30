@@ -341,7 +341,7 @@ export default function ClarissaWebsite() {
         <div style={{ fontSize: "12px", color: "#aaa", letterSpacing: "0.04em" }}>Learning · Literacy · Special Education · Curriculum · EdTech · Policy</div>
         <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
           <div style={{ fontSize: "12px", color: "#aaa" }}>© 2026 Educational Consulting</div>
-          <a href="/admin" style={{ fontSize: "11px", color: "rgba(0,0,0,0.15)", textDecoration: "none" }}>·</a>
+          <a href="/admin" style={{ fontSize: "14px", color: "rgba(0,0,0,0.25)", textDecoration: "none" }}>☮</a>
         </div>
       </footer>
     </div>
