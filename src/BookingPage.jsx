@@ -67,3 +67,161 @@ export default function BookingPage() {
 
   if (done) return (
     <div style={{ minHeight: '100vh', background: '#F9F6F2', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+      <div style={{ textAlign: 'center', maxWidth: '480px' }}>
+        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#F2EBF8', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem' }}>
+          <CheckCircle size={32} color="#5C2D82" />
+        </div>
+        <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#0D0D0D', marginBottom: '1rem', letterSpacing: '-0.02em' }}>You're booked!</h1>
+        <p style={{ fontSize: '15px', color: '#666', lineHeight: 1.8, marginBottom: '0.5rem' }}><strong>{service.title}</strong></p>
+        <p style={{ fontSize: '15px', color: '#666', lineHeight: 1.8, marginBottom: '0.5rem' }}>{formatDate(selected.date)} at {selected.time}</p>
+        <p style={{ fontSize: '14px', color: '#999', marginBottom: '2rem' }}>A confirmation will be sent to {form.email}</p>
+        <a href="/" style={{ display: 'inline-block', background: '#5C2D82', color: '#fff', padding: '12px 28px', borderRadius: '3px', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none' }}>Back to website</a>
+      </div>
+    </div>
+  )
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#F9F6F2', fontFamily: 'inherit' }}>
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 2.5rem', borderBottom: '0.5px solid rgba(0,0,0,0.09)', background: 'rgba(249,246,242,0.92)', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 50 }}>
+        <a href="/" style={{ fontSize: '15px', fontWeight: 500, letterSpacing: '0.06em', color: '#0D0D0D', textDecoration: 'none' }}>Clarissa Terracciano</a>
+        <div style={{ fontSize: '13px', color: '#999' }}>Book a session</div>
+      </nav>
+
+      <div style={{ maxWidth: '860px', margin: '0 auto', padding: '4rem 2rem' }}>
+
+        {/* Progress */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3rem' }}>
+          {['Select service', 'Pick a time', 'Your details'].map((label, i) => (
+            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: step >= i + 1 ? '#5C2D82' : '#e5e5e5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: step >= i + 1 ? '#fff' : '#999', fontWeight: 500 }}>{i + 1}</div>
+              <span style={{ fontSize: '12px', color: step === i + 1 ? '#0D0D0D' : '#999', letterSpacing: '0.04em' }}>{label}</span>
+              {i < 2 && <div style={{ width: '32px', height: '1px', background: '#e5e5e5', margin: '0 4px' }} />}
+            </div>
+          ))}
+        </div>
+
+        {/* Step 1 — Service selection, NO pricing shown */}
+        {step === 1 && (
+          <div>
+            <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#0D0D0D', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>What can Dr. Terracciano help you with?</h1>
+            <p style={{ fontSize: '14px', color: '#888', marginBottom: '2.5rem' }}>Select the type of session that best fits your needs. All sessions are conducted via Zoom.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {services.map(s => (
+                <div key={s.id} onClick={() => setSelected({ ...selected, service: s.id })}
+                  style={{ padding: '1.5rem', border: selected.service === s.id ? '1.5px solid #5C2D82' : '0.5px solid rgba(0,0,0,0.12)', borderRadius: '8px', background: selected.service === s.id ? '#F2EBF8' : '#fff', cursor: 'pointer', transition: 'all 0.15s' }}>
+                  <div style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D', marginBottom: '4px' }}>{s.title}</div>
+                  <div style={{ fontSize: '13px', color: '#888', lineHeight: 1.6 }}>{s.description}</div>
+                  {s.id === 'discovery' && (
+                    <div style={{ marginTop: '8px', display: 'inline-block', background: '#F2EBF8', color: '#5C2D82', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '4px 10px', borderRadius: '100px' }}>Complimentary · 30 min</div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <button onClick={() => selected.service && setStep(2)}
+              style={{ marginTop: '2rem', background: selected.service ? '#5C2D82' : '#ccc', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '3px', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: selected.service ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Continue <ArrowRight size={14} />
+            </button>
+          </div>
+        )}
+
+        {/* Step 2 — Date & Time */}
+        {step === 2 && (
+          <div>
+            <button onClick={() => setStep(1)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#888', fontSize: '13px', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
+              <ArrowLeft size={14} /> Back
+            </button>
+            <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#0D0D0D', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Pick a date & time</h1>
+            <p style={{ fontSize: '14px', color: '#888', marginBottom: '2.5rem' }}>All times are Eastern Time (ET). Monday – Friday only.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+              <div>
+                <div style={{ fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9B6BBD', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}><Calendar size={14} /> Select a date</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '400px', overflowY: 'auto' }}>
+                  {dates.map((date, i) => (
+                    <div key={i} onClick={() => setSelected({ ...selected, date, time: null })}
+                      style={{ padding: '10px 14px', border: selected.date?.toDateString() === date.toDateString() ? '1.5px solid #5C2D82' : '0.5px solid rgba(0,0,0,0.1)', borderRadius: '6px', background: selected.date?.toDateString() === date.toDateString() ? '#F2EBF8' : '#fff', cursor: 'pointer', fontSize: '13px', color: '#0D0D0D' }}>
+                      {formatDate(date)}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9B6BBD', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={14} /> Select a time</div>
+                {selected.date ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {timeSlots.map(time => (
+                      <div key={time} onClick={() => setSelected({ ...selected, time })}
+                        style={{ padding: '10px 14px', border: selected.time === time ? '1.5px solid #5C2D82' : '0.5px solid rgba(0,0,0,0.1)', borderRadius: '6px', background: selected.time === time ? '#F2EBF8' : '#fff', cursor: 'pointer', fontSize: '13px', color: '#0D0D0D' }}>
+                        {time}
+                      </div>
+                    ))}
+                  </div>
+                ) : <div style={{ fontSize: '13px', color: '#aaa', paddingTop: '1rem' }}>Select a date first</div>}
+              </div>
+            </div>
+            <button onClick={() => selected.date && selected.time && setStep(3)}
+              style={{ marginTop: '2rem', background: selected.date && selected.time ? '#5C2D82' : '#ccc', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '3px', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: selected.date && selected.time ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Continue <ArrowRight size={14} />
+            </button>
+          </div>
+        )}
+
+        {/* Step 3 — Details + pricing revealed here */}
+        {step === 3 && (
+          <div>
+            <button onClick={() => setStep(2)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#888', fontSize: '13px', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
+              <ArrowLeft size={14} /> Back
+            </button>
+            <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#0D0D0D', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Your details</h1>
+            <p style={{ fontSize: '14px', color: '#888', marginBottom: '2.5rem' }}>Almost there — just a few details to confirm your booking.</p>
+
+            {/* Booking summary with pricing */}
+            <div style={{ background: '#F2EBF8', border: '0.5px solid rgba(92,45,130,0.15)', borderRadius: '8px', padding: '1.5rem', marginBottom: '2rem' }}>
+              <div style={{ fontSize: '13px', fontWeight: 500, color: '#3B1A55', marginBottom: '4px' }}>{service.title}</div>
+              <div style={{ fontSize: '13px', color: '#9B6BBD', marginBottom: '12px' }}>{formatDate(selected.date)} at {selected.time} · via Zoom</div>
+              {service.price > 0 ? (
+                <>
+                  <div style={{ fontSize: '22px', fontWeight: 500, color: '#5C2D82', marginBottom: '6px' }}>${service.price}</div>
+                  <div style={{ fontSize: '12px', color: '#9B6BBD', lineHeight: 1.6 }}>
+                    All sessions are billed at a minimum of 1.5 hours (60 min session + 30 min planning and preparation). This rate reflects Dr. Terracciano's standard pricing and is non-negotiable.
+                  </div>
+                </>
+              ) : (
+                <div style={{ fontSize: '16px', fontWeight: 500, color: '#5C2D82' }}>Complimentary · No charge</div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '480px' }}>
+              {[
+                { label: 'Full name', key: 'name', type: 'text', placeholder: 'Your name', required: true },
+                { label: 'Email address', key: 'email', type: 'email', placeholder: 'your@email.com', required: true },
+                { label: 'Phone number', key: 'phone', type: 'tel', placeholder: 'Optional' },
+              ].map(field => (
+                <div key={field.key}>
+                  <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>{field.label}{field.required && ' *'}</label>
+                  <input type={field.type} placeholder={field.placeholder} value={form[field.key]} onChange={e => setForm({ ...form, [field.key]: e.target.value })}
+                    style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              ))}
+              <div>
+                <label style={{ fontSize: '12px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#666', display: 'block', marginBottom: '6px' }}>Notes (optional)</label>
+                <textarea placeholder="Tell Dr. Terracciano a little about what you're hoping to work on..." value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })}
+                  style={{ width: '100%', padding: '11px 14px', fontSize: '14px', color: '#0D0D0D', background: '#fff', border: '0.5px solid rgba(0,0,0,0.15)', borderRadius: '6px', outline: 'none', boxSizing: 'border-box', minHeight: '100px', resize: 'vertical' }} />
+              </div>
+            </div>
+
+            {error && <div style={{ marginTop: '1rem', padding: '10px 14px', background: '#FDF2F2', border: '0.5px solid rgba(220,50,50,0.2)', borderRadius: '6px', fontSize: '13px', color: '#9B2B2B', maxWidth: '480px' }}>{error}</div>}
+
+            <button onClick={handleBook} disabled={loading}
+              style={{ marginTop: '2rem', background: loading ? '#9B6BBD' : '#5C2D82', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '3px', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {loading ? 'Confirming...' : service.price === 0 ? 'Confirm free booking' : `Confirm & pay $${service.price}`}
+              {!loading && <ArrowRight size={14} />}
+            </button>
+            <p style={{ fontSize: '12px', color: '#aaa', marginTop: '1rem' }}>
+              {service.price > 0 ? 'Payment collected securely via Stripe at confirmation.' : 'No payment required for discovery calls.'}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
