@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'bookings@clarissaterraccianophd.com',
+        from: 'Clarissa Terracciano <onboarding@resend.dev>',
         to: 'terraccianophd@gmail.com',
         subject: `New Booking: ${serviceTitle}`,
         html: `
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'bookings@clarissaterraccianophd.com',
+        from:'Clarissa Terracciano <onboarding@resend.dev>',
         to: clientEmail,
         subject: `Your booking is confirmed — ${serviceTitle}`,
         html: `
