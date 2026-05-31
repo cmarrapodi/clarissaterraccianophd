@@ -31,7 +31,7 @@ const stagger = {
 
 const expertiseAreas = [
   { num: "01", title: "B.A. Developmental Psychology", school: "Hunter College, City University of New York", description: "A foundational grounding in how children grow, think, and learn — informing every consultation with a deep understanding of child development, cognition, and the psychological dimensions of education." },
-  { num: "02", title: "M.A. Inclusive Education", school: "Teachers College, Columbia University", description: "Graduate training at one of the world's foremost schools of education, specializing in inclusive practices and teaching students with disabilities — bridging research and real-world classroom application." },
+  { num: "02", title: "M.A. Inclusive Education", school: "Teachers College, Columbia University", description: "Graduate training specializing in inclusive practices and teaching students with disabilities — bridging research and real-world classroom application." },
   { num: "03", title: "Ph.D. Educational Leadership & Policy Studies", school: "University of Denver", description: "Doctoral research examining the policies governing emerging and innovative technology and digital infrastructure in education — positioning Dr. Terracciano at the intersection of educational leadership and the future of learning." },
 ];
 
@@ -177,7 +177,6 @@ export default function ClarissaWebsite() {
         {selectedService && <ServiceModal service={selectedService} onClose={() => setSelectedService(null)} isMobile={isMobile} />}
       </AnimatePresence>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -271,13 +270,13 @@ export default function ClarissaWebsite() {
             Dr. Clarissa Terracciano's story in education begins at sixteen — not in a lecture hall, but at a South Florida summer camp, working alongside students with disabilities. It was her first glimpse into how differently people learn, and how profoundly the right support can change a child's experience of the world. She never looked back.
           </motion.p>
           <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 1.5rem", textAlign: "left" }}>
-            That early spark led her to Hunter College, where she studied developmental psychology — building the scientific foundation for understanding how children grow, think, and learn. Over nine years, she worked directly with learners across the full lifespan, from toddlers to adults in their sixties, coaching and guiding their development across three pillars that rarely get equal attention in traditional education: wellness, socialization, and sport.
+            That early spark led her to Hunter College, where she studied developmental psychology — building the scientific foundation for understanding how children grow, think, and learn. She began her journey in the schooling system working directly with learners across the full lifespan, from toddlers to adults in their sixties, coaching and guiding their development across three pillars that rarely get equal attention in traditional education: wellness, socialization, and sport.
           </motion.p>
           <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 1.5rem", textAlign: "left" }}>
-            She went on to earn her Master's degree at Teachers College, Columbia University — one of the world's most prestigious schools of education — where she specialized in inclusive education and teaching students with disabilities.
+            She went on to earn her Master's degree at Teachers College, Columbia University, where she specialized in inclusive education and teaching students with disabilities. After graduating, she brought that expertise into New York City schools and later Colorado schools, working across both urban and mountain communities to make meaningful, high-quality education accessible to all.
           </motion.p>
           <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 3rem", textAlign: "left" }}>
-            Two decades into her career, she pursued her doctorate — earning a Ph.D. in Educational Leadership and Policy Studies, with research focused on the policies shaping emerging technology and digital infrastructure in education.
+            Two decades into her career, she pursued her doctorate — earning a Ph.D. in Educational Leadership and Policy Studies, with research focused on the policies shaping emerging technology and digital infrastructure in education. That full arc — from a summer camp in South Florida to the frontier of educational policy — is what she brings to every family, educator, and organization she works with today.
           </motion.p>
 
           <div className="expertise-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "0.5px solid rgba(0,0,0,0.1)", marginBottom: "4rem", textAlign: "left" }}>
