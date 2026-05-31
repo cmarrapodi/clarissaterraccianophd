@@ -17,6 +17,8 @@ import {
   Heart,
   BookMarked,
   Menu,
+  Mic,
+  PenLine,
 } from "lucide-react";
 
 const fadeUp = {
@@ -56,6 +58,33 @@ const services = [
   { id: "retainer", icon: CalendarDays, title: "Monthly Family Educational Retainer", desc: "Ongoing advisory support for families who want consistent, high-touch educational guidance throughout the school year. A dedicated partner in your child's educational journey." },
   { id: "pods", icon: Users, title: "Learning Pods", desc: "Curated small-group learning series for children focused on academic growth, supplemental enrichment, and intellectual curiosity. Intentionally small groups ensure every child is seen, supported, and challenged at the right level." },
   { id: "halfday", icon: Lightbulb, title: "Half-Day & Full-Day Consulting", desc: "Intensive consulting engagements for schools, organizations, and leadership teams requiring deep-dive strategic sessions. Available as half-day or full-day formats depending on scope and need." },
+];
+
+const publications = [
+  {
+    type: "presentation",
+    icon: Mic,
+    year: "2024",
+    citation: "Terracciano, C. (2024). Blockchain for Justice and Joy: A Unique Perspective on Revolutionizing Equity, Access and Mobility Through Leadership and Policy.",
+    venue: "UCEA Annual Convention, Los Angeles, CA, USA",
+    url: null,
+  },
+  {
+    type: "blog",
+    icon: PenLine,
+    year: "2025",
+    citation: "Terracciano, C. (2025, April 1). Part I: Introduction to blockchain and literacy and language learning.",
+    venue: "Notre Dame Center for Literacy Education",
+    url: "https://iei.nd.edu/initiatives/notre-dame-center-for-literacy-education/news/part-i-introduction-to-blockchain-and",
+  },
+  {
+    type: "blog",
+    icon: PenLine,
+    year: "2025",
+    citation: "Terracciano, C. (2025, April 2). Part II: How blockchain can support all learners.",
+    venue: "Notre Dame Center for Literacy Education",
+    url: "https://iei.nd.edu/initiatives/notre-dame-center-for-literacy-education/news/part-ii-how-blockchain-can-support-all",
+  },
 ];
 
 const heroTags = ["Special Education", "Literacy", "Blockchain & EdTech", "Homeschool Planning"];
@@ -164,6 +193,7 @@ export default function ClarissaWebsite() {
           .about-section { padding: 4rem 1.25rem !important; }
           .services-section { padding: 4rem 1.25rem !important; }
           .approach-section { padding: 4rem 1.25rem !important; }
+          .publications-section { padding: 4rem 1.25rem !important; }
           .booking-section { padding: 5rem 1.25rem !important; }
           .quote-section { padding: 3rem 1.25rem !important; }
           .footer-inner { flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
@@ -185,7 +215,7 @@ export default function ClarissaWebsite() {
               <div style={{ fontSize: "15px", fontWeight: 500, letterSpacing: "0.06em", color: "#fff" }}>Clarissa Terracciano</div>
               <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff" }}><X size={24} /></button>
             </div>
-            {["About", "Services", "Contact"].map((item) => (
+            {["About", "Services", "Publications", "Contact"].map((item) => (
               <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}
                 style={{ fontSize: "28px", fontWeight: 300, color: "#fff", textDecoration: "none", letterSpacing: "-0.01em", padding: "1rem 0", borderBottom: "0.5px solid rgba(255,255,255,0.1)" }}>
                 {item}
@@ -204,6 +234,7 @@ export default function ClarissaWebsite() {
         <div className="nav-links" style={{ display: "flex", gap: "2rem", fontSize: "13px", color: "#666" }}>
           <a href="#about" style={{ color: "inherit", textDecoration: "none" }}>About</a>
           <a href="#services" style={{ color: "inherit", textDecoration: "none" }}>Services</a>
+          <a href="#publications" style={{ color: "inherit", textDecoration: "none" }}>Publications</a>
           <a href="#booking" style={{ color: "inherit", textDecoration: "none" }}>Contact</a>
         </div>
         <button className="nav-book-btn" onClick={() => goToBook()} style={{ background: "#5C2D82", color: "#fff", border: "none", padding: "10px 22px", borderRadius: "3px", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}>
@@ -373,6 +404,49 @@ export default function ClarissaWebsite() {
                 <span style={{ fontSize: "14px", lineHeight: 1.75, color: "#3B1A55" }}>{value}</span>
               </motion.div>
             ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Publications Section */}
+      <section id="publications" className="publications-section" style={{ padding: "6rem 2.5rem", background: "#F9F6F2", borderTop: "0.5px solid rgba(0,0,0,0.09)" }}>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }} variants={stagger} style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <motion.div variants={fadeUp}><SectionLabel>Publications & Presentations</SectionLabel></motion.div>
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(26px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.15, color: "#0D0D0D", marginBottom: "0.75rem" }}>
+            Research at the frontier of{" "}<em style={{ fontStyle: "italic", fontWeight: 300, color: "#5C2D82" }}>education</em> and technology.
+          </motion.h2>
+          <motion.p variants={fadeUp} style={{ fontSize: "15px", color: "#888", marginBottom: "3rem", lineHeight: 1.8 }}>
+            Dr. Terracciano's scholarship bridges blockchain innovation, literacy education, and educational equity — contributing to national conversations on the future of learning.
+          </motion.p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {publications.map((pub, index) => {
+              const Icon = pub.icon;
+              return (
+                <motion.div key={index} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.5, delay: index * 0.1 }}
+                  style={{ display: "flex", gap: "1.25rem", padding: "1.75rem 2rem", background: "#fff", border: "0.5px solid rgba(92,45,130,0.12)", borderRadius: "8px", borderLeft: "3px solid #5C2D82", alignItems: "flex-start" }}>
+                  <div style={{ width: "40px", height: "40px", borderRadius: "8px", background: "#F2EBF8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Icon size={18} color="#5C2D82" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "#9B6BBD", background: "#F2EBF8", padding: "3px 10px", borderRadius: "100px" }}>
+                        {pub.type === "presentation" ? "Conference Presentation" : "University Blog Post"}
+                      </span>
+                      <span style={{ fontSize: "11px", color: "#bbb", letterSpacing: "0.06em" }}>{pub.year}</span>
+                    </div>
+                    <p style={{ fontSize: "14px", lineHeight: 1.75, color: "#333", marginBottom: "4px" }}>{pub.citation}</p>
+                    <p style={{ fontSize: "12px", color: "#9B6BBD", letterSpacing: "0.04em", marginBottom: pub.url ? "10px" : "0" }}>{pub.venue}</p>
+                    {pub.url && (
+                      <a href={pub.url} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#5C2D82", textDecoration: "none", letterSpacing: "0.06em", fontWeight: 500 }}>
+                        Read article <ArrowRight size={11} />
+                      </a>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.div>
       </section>
