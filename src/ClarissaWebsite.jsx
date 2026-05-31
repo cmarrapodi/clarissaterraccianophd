@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -16,6 +16,7 @@ import {
   Zap,
   Heart,
   BookMarked,
+  Menu,
 } from "lucide-react";
 
 const fadeUp = {
@@ -70,6 +71,16 @@ function goToBook(serviceId) {
   window.location.href = serviceId ? `/book?service=${serviceId}` : "/book";
 }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return isMobile;
+}
+
 function MarqueeStrip() {
   const doubled = [...stripItems, ...stripItems];
   return (
@@ -94,7 +105,7 @@ function SectionLabel({ children }) {
   );
 }
 
-function ServiceModal({ service, onClose }) {
+function ServiceModal({ service, onClose, isMobile }) {
   const Icon = service.icon;
   return (
     <motion.div
@@ -102,27 +113,27 @@ function ServiceModal({ service, onClose }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
-      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 100, display: "flex", alignItems: isMobile ? "flex-end" : "center", justifyContent: "center", padding: isMobile ? "0" : "2rem" }}
     >
       <motion.div
-        initial={{ opacity: 0, y: 32, scale: 0.96 }}
+        initial={{ opacity: 0, y: isMobile ? 100 : 32, scale: isMobile ? 1 : 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 32, scale: 0.96 }}
+        exit={{ opacity: 0, y: isMobile ? 100 : 32, scale: isMobile ? 1 : 0.96 }}
         transition={{ duration: 0.3 }}
         onClick={e => e.stopPropagation()}
-        style={{ background: "#fff", borderRadius: "16px", padding: "3rem", maxWidth: "540px", width: "100%", position: "relative", boxShadow: "0 24px 64px rgba(92,45,130,0.2)" }}
+        style={{ background: "#fff", borderRadius: isMobile ? "16px 16px 0 0" : "16px", padding: isMobile ? "2rem 1.5rem 3rem" : "3rem", maxWidth: isMobile ? "100%" : "540px", width: "100%", position: "relative", boxShadow: "0 24px 64px rgba(92,45,130,0.2)" }}
       >
-        <button onClick={onClose} style={{ position: "absolute", top: "1.5rem", right: "1.5rem", background: "none", border: "none", cursor: "pointer", color: "#999" }}>
+        <button onClick={onClose} style={{ position: "absolute", top: "1.25rem", right: "1.25rem", background: "none", border: "none", cursor: "pointer", color: "#999" }}>
           <X size={20} />
         </button>
-        <div style={{ width: "56px", height: "56px", borderRadius: "12px", background: "#F2EBF8", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.5rem" }}>
-          <Icon size={26} color="#5C2D82" />
+        <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "#F2EBF8", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.25rem" }}>
+          <Icon size={22} color="#5C2D82" />
         </div>
-        <h2 style={{ fontSize: "24px", fontWeight: 500, color: "#0D0D0D", marginBottom: "1rem", letterSpacing: "-0.01em", lineHeight: 1.3 }}>{service.title}</h2>
+        <h2 style={{ fontSize: isMobile ? "20px" : "24px", fontWeight: 500, color: "#0D0D0D", marginBottom: "1rem", letterSpacing: "-0.01em", lineHeight: 1.3 }}>{service.title}</h2>
         <p style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", marginBottom: "2rem" }}>{service.desc}</p>
         <button
           onClick={() => goToBook(service.id)}
-          style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#5C2D82", color: "#fff", padding: "14px 28px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer" }}
+          style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#5C2D82", color: "#fff", padding: "14px 28px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer", width: isMobile ? "100%" : "auto", justifyContent: isMobile ? "center" : "flex-start" }}
         >
           Book this service <ArrowRight size={14} />
         </button>
@@ -133,63 +144,116 @@ function ServiceModal({ service, onClose }) {
 
 export default function ClarissaWebsite() {
   const [selectedService, setSelectedService] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <div style={{ background: "#F9F6F2", color: "#0D0D0D", minHeight: "100vh", fontFamily: "inherit", overflowX: "hidden" }}>
 
+      <style>{`
+        @media (max-width: 767px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .hero-image { min-height: 320px !important; }
+          .expertise-grid { grid-template-columns: 1fr !important; }
+          .expertise-item { border-right: none !important; border-bottom: 0.5px solid rgba(0,0,0,0.1); }
+          .expertise-item:last-child { border-bottom: none; }
+          .training-grid { grid-template-columns: 1fr !important; }
+          .services-grid { grid-template-columns: 1fr 1fr !important; }
+          .nav-links { display: none !important; }
+          .nav-book-btn { display: none !important; }
+          .about-section { padding: 4rem 1.25rem !important; }
+          .services-section { padding: 4rem 1.25rem !important; }
+          .approach-section { padding: 4rem 1.25rem !important; }
+          .booking-section { padding: 5rem 1.25rem !important; }
+          .quote-section { padding: 3rem 1.25rem !important; }
+          .footer-inner { flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
+        }
+        @media (max-width: 480px) {
+          .services-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+
       <AnimatePresence>
-        {selectedService && <ServiceModal service={selectedService} onClose={() => setSelectedService(null)} />}
+        {selectedService && <ServiceModal service={selectedService} onClose={() => setSelectedService(null)} isMobile={isMobile} />}
       </AnimatePresence>
 
-      <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1.25rem 2.5rem", borderBottom: "0.5px solid rgba(0,0,0,0.09)", background: "rgba(249,246,242,0.92)", backdropFilter: "blur(10px)", position: "sticky", top: 0, zIndex: 50 }}>
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: "fixed", inset: 0, background: "#1A0F24", zIndex: 200, display: "flex", flexDirection: "column", padding: "2rem 1.5rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3rem" }}>
+              <div style={{ fontSize: "15px", fontWeight: 500, letterSpacing: "0.06em", color: "#fff" }}>Clarissa Terracciano</div>
+              <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#fff" }}><X size={24} /></button>
+            </div>
+            {["About", "Services", "Contact"].map((item) => (
+              <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuOpen(false)}
+                style={{ fontSize: "28px", fontWeight: 300, color: "#fff", textDecoration: "none", letterSpacing: "-0.01em", padding: "1rem 0", borderBottom: "0.5px solid rgba(255,255,255,0.1)" }}>
+                {item}
+              </a>
+            ))}
+            <button onClick={() => { goToBook(); setMenuOpen(false); }}
+              style={{ marginTop: "2rem", background: "#5C2D82", color: "#fff", border: "none", padding: "16px", borderRadius: "3px", fontSize: "13px", letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}>
+              Book a session
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: isMobile ? "1rem 1.25rem" : "1.25rem 2.5rem", borderBottom: "0.5px solid rgba(0,0,0,0.09)", background: "rgba(249,246,242,0.92)", backdropFilter: "blur(10px)", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ fontSize: "15px", fontWeight: 500, letterSpacing: "0.06em" }}>Clarissa Terracciano</div>
-        <div style={{ display: "flex", gap: "2rem", fontSize: "13px", color: "#666" }}>
+        <div className="nav-links" style={{ display: "flex", gap: "2rem", fontSize: "13px", color: "#666" }}>
           <a href="#about" style={{ color: "inherit", textDecoration: "none" }}>About</a>
           <a href="#services" style={{ color: "inherit", textDecoration: "none" }}>Services</a>
           <a href="#booking" style={{ color: "inherit", textDecoration: "none" }}>Contact</a>
         </div>
-        <button onClick={() => goToBook()} style={{ background: "#5C2D82", color: "#fff", border: "none", padding: "10px 22px", borderRadius: "3px", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}>
+        <button className="nav-book-btn" onClick={() => goToBook()} style={{ background: "#5C2D82", color: "#fff", border: "none", padding: "10px 22px", borderRadius: "3px", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer" }}>
           Book a session
         </button>
+        {isMobile && (
+          <button onClick={() => setMenuOpen(true)} style={{ background: "none", border: "none", cursor: "pointer", color: "#0D0D0D", padding: "4px" }}>
+            <Menu size={22} />
+          </button>
+        )}
       </nav>
 
-      <section style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", minHeight: "88vh" }}>
-        <motion.div initial="hidden" animate="visible" variants={stagger} style={{ padding: "5rem 3rem 4rem 2.5rem", display: "flex", flexDirection: "column", justifyContent: "center", borderRight: "0.5px solid rgba(0,0,0,0.09)" }}>
-          <motion.div variants={fadeUp} style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "2rem" }}>
+      <section className="hero-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", minHeight: isMobile ? "auto" : "88vh" }}>
+        <motion.div initial="hidden" animate="visible" variants={stagger} style={{ padding: isMobile ? "3rem 1.25rem" : "5rem 3rem 4rem 2.5rem", display: "flex", flexDirection: "column", justifyContent: "center", borderRight: isMobile ? "none" : "0.5px solid rgba(0,0,0,0.09)" }}>
+          <motion.div variants={fadeUp} style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.5rem" }}>
             <div style={{ width: "28px", height: "1.5px", background: "#9B6BBD", borderRadius: "2px" }} />
             <span style={{ fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#9B6BBD" }}>Educational Consulting</span>
           </motion.div>
-          <motion.h1 variants={fadeUp} style={{ fontSize: "clamp(36px, 4vw, 52px)", fontWeight: 400, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#0D0D0D", marginBottom: "2rem" }}>
+          <motion.h1 variants={fadeUp} style={{ fontSize: isMobile ? "36px" : "clamp(36px, 4vw, 52px)", fontWeight: 400, lineHeight: 1.08, letterSpacing: "-0.02em", color: "#0D0D0D", marginBottom: "1.5rem" }}>
             Exceptional guidance for{" "}<em style={{ fontStyle: "italic", fontWeight: 300, color: "#5C2D82" }}>exceptional</em>{" "}learners.
           </motion.h1>
-          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "420px", marginBottom: "2.5rem" }}>
+          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", marginBottom: "2rem" }}>
             Dr. Clarissa Terracciano partners with families, educators, and institutions to design high-impact educational pathways grounded in two decades of expertise.
           </motion.p>
-          <motion.div variants={fadeUp} style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "2.5rem" }}>
+          <motion.div variants={fadeUp} style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "2rem" }}>
             {heroTags.map((tag) => (
               <span key={tag} style={{ background: "#F2EBF8", color: "#3B1A55", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", padding: "6px 14px", borderRadius: "100px" }}>{tag}</span>
             ))}
           </motion.div>
           <motion.div variants={fadeUp} style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-            <button onClick={() => goToBook()} style={{ background: "#5C2D82", color: "#fff", padding: "14px 30px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}>
+            <button onClick={() => goToBook()} style={{ background: "#5C2D82", color: "#fff", padding: "14px 24px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", flex: isMobile ? "1" : "none", justifyContent: "center" }}>
               Book a consultation <ArrowRight size={14} />
             </button>
-            <a href="#services" style={{ background: "transparent", color: "#0D0D0D", padding: "14px 30px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px solid rgba(0,0,0,0.25)", borderRadius: "3px", textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
+            <a href="#services" style={{ background: "transparent", color: "#0D0D0D", padding: "14px 24px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px solid rgba(0,0,0,0.25)", borderRadius: "3px", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", flex: isMobile ? "1" : "none" }}>
               Explore services
             </a>
           </motion.div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, ease: "easeOut" }} style={{ background: "#1A0F24", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "3rem", position: "relative", overflow: "hidden" }}>
+        <motion.div className="hero-image" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, ease: "easeOut" }}
+          style={{ background: "#1A0F24", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "2rem", position: "relative", overflow: "hidden", minHeight: isMobile ? "320px" : "auto" }}>
           <div style={{ position: "absolute", top: "-80px", right: "-80px", width: "320px", height: "320px", borderRadius: "50%", background: "rgba(155,107,189,0.18)" }} />
-          <div style={{ position: "absolute", bottom: "60px", left: "-60px", width: "200px", height: "200px", borderRadius: "50%", background: "rgba(242,235,248,0.07)" }} />
           <div style={{ position: "absolute", inset: 0 }}>
             <img src="/clarissa-headshot.jpg" alt="Dr. Clarissa Terracciano" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(26,15,36,0.85) 0%, rgba(26,15,36,0.2) 50%, transparent 100%)" }} />
           </div>
           <div style={{ position: "relative", zIndex: 2 }}>
-            <div style={{ display: "inline-block", background: "rgba(155,107,189,0.3)", color: "#F2EBF8", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", padding: "6px 14px", borderRadius: "100px", marginBottom: "1.25rem" }}>Ph.D. · Licensed NY & CO</div>
-            <div style={{ fontSize: "26px", fontWeight: 300, color: "#fff", letterSpacing: "-0.01em", marginBottom: "4px" }}>Dr. Clarissa Terracciano</div>
+            <div style={{ display: "inline-block", background: "rgba(155,107,189,0.3)", color: "#F2EBF8", fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", padding: "6px 14px", borderRadius: "100px", marginBottom: "1rem" }}>Ph.D. · Licensed NY & CO</div>
+            <div style={{ fontSize: isMobile ? "20px" : "26px", fontWeight: 300, color: "#fff", letterSpacing: "-0.01em", marginBottom: "4px" }}>Dr. Clarissa Terracciano</div>
             <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em" }}>Educational Consultant · 20 Years Experience</div>
           </div>
         </motion.div>
@@ -197,31 +261,31 @@ export default function ClarissaWebsite() {
 
       <MarqueeStrip />
 
-      <section id="about" style={{ padding: "6rem 2.5rem", textAlign: "center" }}>
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }} variants={stagger}>
+      <section id="about" className="about-section" style={{ padding: "6rem 2.5rem", textAlign: "center" }}>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }} variants={stagger}>
           <motion.div variants={fadeUp} style={{ display: "flex", justifyContent: "center" }}><SectionLabel>About Clarissa</SectionLabel></motion.div>
-          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(28px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#0D0D0D", maxWidth: "560px", margin: "0 auto 1.5rem" }}>
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(26px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.15, color: "#0D0D0D", maxWidth: "560px", margin: "0 auto 1.5rem" }}>
             A career built on{" "}<em style={{ fontStyle: "italic", fontWeight: 300, color: "#5C2D82" }}>transforming</em>{" "}how people learn.
           </motion.h2>
-          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 1.5rem" }}>
+          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 1.5rem", textAlign: "left" }}>
             Dr. Clarissa Terracciano's story in education begins at sixteen — not in a lecture hall, but at a South Florida summer camp, working alongside students with disabilities. It was her first glimpse into how differently people learn, and how profoundly the right support can change a child's experience of the world. She never looked back.
           </motion.p>
-          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 1.5rem" }}>
-            That early spark led her to Hunter College, where she studied developmental psychology — building the scientific foundation for understanding how children grow, think, and learn. Over nine years, she worked directly with learners across the full lifespan, from toddlers to adults in their sixties, coaching and guiding their development across three pillars that rarely get equal attention in traditional education: wellness, socialization, and sport. She understood early on that learning doesn't happen in isolation — it happens in the body, in relationship, and in play.
+          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 1.5rem", textAlign: "left" }}>
+            That early spark led her to Hunter College, where she studied developmental psychology — building the scientific foundation for understanding how children grow, think, and learn. Over nine years, she worked directly with learners across the full lifespan, from toddlers to adults in their sixties, coaching and guiding their development across three pillars that rarely get equal attention in traditional education: wellness, socialization, and sport.
           </motion.p>
-          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 1.5rem" }}>
-            She went on to earn her Master's degree at Teachers College, Columbia University — one of the world's most prestigious schools of education — where she specialized in inclusive education and teaching students with disabilities. After graduating, she brought that expertise into New York City schools and later Colorado schools, working across both urban and mountain communities to make meaningful, high-quality education accessible to all.
+          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 1.5rem", textAlign: "left" }}>
+            She went on to earn her Master's degree at Teachers College, Columbia University — one of the world's most prestigious schools of education — where she specialized in inclusive education and teaching students with disabilities.
           </motion.p>
-          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 4rem" }}>
-            Two decades into her career, she pursued her doctorate — earning a Ph.D. in Educational Leadership and Policy Studies, with research focused on the policies shaping emerging technology and digital infrastructure in education. That full arc — from a summer camp in South Florida to the frontier of educational policy — is what she brings to every family, educator, and organization she works with today.
+          <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", margin: "0 auto 3rem", textAlign: "left" }}>
+            Two decades into her career, she pursued her doctorate — earning a Ph.D. in Educational Leadership and Policy Studies, with research focused on the policies shaping emerging technology and digital infrastructure in education.
           </motion.p>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "0.5px solid rgba(0,0,0,0.1)", marginBottom: "5rem", textAlign: "left" }}>
+          <div className="expertise-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", border: "0.5px solid rgba(0,0,0,0.1)", marginBottom: "4rem", textAlign: "left" }}>
             {expertiseAreas.map((area, index) => (
-              <motion.div key={area.num} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.6, delay: index * 0.1 }}
-                style={{ padding: "2.5rem 2rem", borderRight: index < expertiseAreas.length - 1 ? "0.5px solid rgba(0,0,0,0.1)" : "none" }}>
+              <motion.div key={area.num} className="expertise-item" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.6, delay: index * 0.1 }}
+                style={{ padding: "2rem 1.75rem", borderRight: index < expertiseAreas.length - 1 ? "0.5px solid rgba(0,0,0,0.1)" : "none" }}>
                 <div style={{ width: "32px", height: "2px", background: "#5C2D82", borderRadius: "2px", marginBottom: "1.25rem" }} />
-                <div style={{ fontSize: "16px", fontWeight: 500, color: "#0D0D0D", marginBottom: "4px", lineHeight: 1.35 }}>{area.title}</div>
+                <div style={{ fontSize: "15px", fontWeight: 500, color: "#0D0D0D", marginBottom: "4px", lineHeight: 1.35 }}>{area.title}</div>
                 <div style={{ fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#9B6BBD", marginBottom: "1rem" }}>{area.school}</div>
                 <div style={{ fontSize: "13px", lineHeight: 1.85, color: "#666" }}>{area.description}</div>
               </motion.div>
@@ -230,13 +294,13 @@ export default function ClarissaWebsite() {
 
           <div style={{ textAlign: "left" }}>
             <motion.div variants={fadeUp}><SectionLabel>Specialized Training & Certifications</SectionLabel></motion.div>
-            <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", marginBottom: "2.5rem" }}>
+            <motion.p variants={fadeUp} style={{ fontSize: "15px", lineHeight: 1.85, color: "#666", maxWidth: "640px", marginBottom: "2rem" }}>
               Dr. Terracciano holds specialized training in the most respected structured literacy and learning methodologies in the field.
             </motion.p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
+            <div className="training-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
               {specializedTraining.map((item, index) => (
-                <motion.div key={item.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5, delay: index * 0.1 }}
-                  style={{ padding: "1.75rem 2rem", background: "#fff", border: "0.5px solid rgba(92,45,130,0.12)", borderRadius: "8px", borderLeft: "3px solid #5C2D82" }}>
+                <motion.div key={item.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.5, delay: index * 0.1 }}
+                  style={{ padding: "1.5rem", background: "#fff", border: "0.5px solid rgba(92,45,130,0.12)", borderRadius: "8px", borderLeft: "3px solid #5C2D82" }}>
                   <div style={{ fontSize: "15px", fontWeight: 600, color: "#0D0D0D", marginBottom: "6px" }}>{item.title}</div>
                   <div style={{ fontSize: "13px", lineHeight: 1.8, color: "#666" }}>{item.desc}</div>
                 </motion.div>
@@ -246,25 +310,25 @@ export default function ClarissaWebsite() {
         </motion.div>
       </section>
 
-      <motion.section initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7 }}
+      <motion.section className="quote-section" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.7 }}
         style={{ background: "#F2EBF8", borderTop: "0.5px solid rgba(92,45,130,0.12)", borderBottom: "0.5px solid rgba(92,45,130,0.12)", padding: "5rem 2.5rem", textAlign: "center" }}>
         <div style={{ maxWidth: "800px", margin: "0 auto" }}>
           <Quote size={28} color="#9B6BBD" style={{ marginBottom: "1.5rem", opacity: 0.6 }} />
-          <p style={{ fontSize: "clamp(20px, 2.5vw, 28px)", fontWeight: 300, lineHeight: 1.5, color: "#3B1A55", fontStyle: "italic", letterSpacing: "-0.01em" }}>
+          <p style={{ fontSize: "clamp(18px, 2.5vw, 28px)", fontWeight: 300, lineHeight: 1.5, color: "#3B1A55", fontStyle: "italic", letterSpacing: "-0.01em" }}>
             "True educational growth requires more than generic solutions — it requires someone who understands the whole learner, the full system, and the long road ahead."
           </p>
           <div style={{ marginTop: "1.5rem", fontSize: "12px", letterSpacing: "0.15em", textTransform: "uppercase", color: "#9B6BBD" }}>— Dr. Clarissa Terracciano</div>
         </div>
       </motion.section>
 
-      <section id="services" style={{ background: "#1A0F24", padding: "6rem 2.5rem" }}>
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} variants={stagger}>
+      <section id="services" className="services-section" style={{ background: "#1A0F24", padding: "6rem 2.5rem" }}>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={stagger}>
           <motion.div variants={fadeUp}><SectionLabel>Services</SectionLabel></motion.div>
-          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(28px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#fff", marginBottom: "0.75rem", maxWidth: "560px" }}>
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(26px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#fff", marginBottom: "0.75rem", maxWidth: "560px" }}>
             High-level consulting designed to create{" "}<em style={{ fontStyle: "italic", fontWeight: 300, color: "#9B6BBD" }}>clarity</em> and results.
           </motion.h2>
-          <motion.p variants={fadeUp} style={{ fontSize: "14px", color: "rgba(255,255,255,0.45)", marginBottom: "3rem" }}>Click any service to learn more and book.</motion.p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "rgba(255,255,255,0.07)" }}>
+          <motion.p variants={fadeUp} style={{ fontSize: "14px", color: "rgba(255,255,255,0.45)", marginBottom: "2.5rem" }}>Tap any service to learn more and book.</motion.p>
+          <div className="services-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "rgba(255,255,255,0.07)" }}>
             {services.map((service, index) => {
               const Icon = service.icon;
               return (
@@ -272,35 +336,35 @@ export default function ClarissaWebsite() {
                   key={service.id}
                   initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.1 }}
+                  viewport={{ once: true, amount: 0.05 }}
                   transition={{ duration: 0.5, delay: index * 0.04 }}
                   whileHover={{ background: "rgba(92,45,130,0.3)" }}
                   onClick={() => setSelectedService(service)}
-                  style={{ background: "#1A0F24", padding: "2rem", cursor: "pointer", transition: "background 0.2s", borderRight: (index + 1) % 3 !== 0 ? "0.5px solid rgba(255,255,255,0.07)" : "none", borderBottom: index < services.length - 3 ? "0.5px solid rgba(255,255,255,0.07)" : "none" }}
+                  style={{ background: "#1A0F24", padding: "1.5rem", cursor: "pointer", transition: "background 0.2s" }}
                 >
-                  <div style={{ width: "40px", height: "40px", borderRadius: "8px", background: "rgba(92,45,130,0.35)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1rem" }}>
+                  <div style={{ width: "40px", height: "40px", borderRadius: "8px", background: "rgba(92,45,130,0.35)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.75rem" }}>
                     <Icon size={18} color="#F2EBF8" />
                   </div>
-                  <div style={{ fontSize: "14px", fontWeight: 500, color: "#fff", marginBottom: "6px", lineHeight: 1.35 }}>{service.title}</div>
-                  <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)", display: "flex", alignItems: "center", gap: "4px" }}>
+                  <div style={{ fontSize: "13px", fontWeight: 500, color: "#fff", marginBottom: "6px", lineHeight: 1.35 }}>{service.title}</div>
+                  <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.35)", display: "flex", alignItems: "center", gap: "4px" }}>
                     Learn more <ArrowRight size={10} />
                   </div>
                 </motion.div>
               );
             })}
           </div>
-          <div style={{ textAlign: "center", marginTop: "3rem" }}>
-            <button onClick={() => goToBook()} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#5C2D82", color: "#fff", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer" }}>
+          <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
+            <button onClick={() => goToBook()} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#5C2D82", color: "#fff", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer", width: isMobile ? "100%" : "auto", justifyContent: "center" }}>
               Book a session <ArrowRight size={14} />
             </button>
           </div>
         </motion.div>
       </section>
 
-      <section style={{ padding: "6rem 2.5rem", background: "#fff" }}>
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }} variants={stagger} style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
+      <section className="approach-section" style={{ padding: "6rem 2.5rem", background: "#fff" }}>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }} variants={stagger} style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
           <motion.div variants={fadeUp} style={{ display: "flex", justifyContent: "center" }}><SectionLabel>My approach</SectionLabel></motion.div>
-          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(28px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#0D0D0D", maxWidth: "500px", margin: "0 auto 3rem" }}>
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(26px, 3vw, 38px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#0D0D0D", maxWidth: "500px", margin: "0 auto 2.5rem" }}>
             Strategic expertise for{" "}<em style={{ fontStyle: "italic", fontWeight: 300, color: "#5C2D82" }}>meaningful</em> educational growth.
           </motion.h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", textAlign: "left" }}>
@@ -314,35 +378,37 @@ export default function ClarissaWebsite() {
         </motion.div>
       </section>
 
-      <section id="booking" style={{ padding: "8rem 2.5rem", borderTop: "0.5px solid rgba(0,0,0,0.09)", textAlign: "center" }}>
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={stagger}>
+      <section id="booking" className="booking-section" style={{ padding: "8rem 2.5rem", borderTop: "0.5px solid rgba(0,0,0,0.09)", textAlign: "center" }}>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={stagger}>
           <motion.div variants={fadeUp} style={{ width: "56px", height: "56px", borderRadius: "12px", background: "#F2EBF8", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem" }}>
             <CalendarDays size={26} color="#5C2D82" />
           </motion.div>
-          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(32px, 4vw, 46px)", fontWeight: 400, letterSpacing: "-0.025em", color: "#0D0D0D", marginBottom: "1.5rem", lineHeight: 1.08 }}>
+          <motion.h2 variants={fadeUp} style={{ fontSize: "clamp(28px, 4vw, 46px)", fontWeight: 400, letterSpacing: "-0.025em", color: "#0D0D0D", marginBottom: "1.5rem", lineHeight: 1.1 }}>
             Bring expert insight into your{" "}<em style={{ fontStyle: "italic", fontWeight: 300, color: "#5C2D82" }}>learner's</em> journey.
           </motion.h2>
           <motion.p variants={fadeUp} style={{ fontSize: "15px", color: "#666", maxWidth: "520px", margin: "0 auto 3rem" }}>
             Book a consultation for thoughtful, research-informed educational guidance tailored to your learner, family, school, or organization. All sessions are conducted via Zoom.
           </motion.p>
-          <motion.div variants={fadeUp} style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <button onClick={() => goToBook()} style={{ background: "#5C2D82", color: "#fff", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}>
+          <motion.div variants={fadeUp} style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap", flexDirection: isMobile ? "column" : "row", alignItems: "center" }}>
+            <button onClick={() => goToBook()} style={{ background: "#5C2D82", color: "#fff", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "none", borderRadius: "3px", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", width: isMobile ? "100%" : "auto", justifyContent: "center" }}>
               Book a free discovery call <ArrowRight size={14} />
             </button>
-            <button onClick={() => goToBook()} style={{ background: "transparent", color: "#0D0D0D", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px solid rgba(0,0,0,0.25)", borderRadius: "3px", cursor: "pointer" }}>
+            <button onClick={() => goToBook()} style={{ background: "transparent", color: "#0D0D0D", padding: "15px 32px", fontSize: "12px", letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px solid rgba(0,0,0,0.25)", borderRadius: "3px", cursor: "pointer", width: isMobile ? "100%" : "auto" }}>
               Book a service
             </button>
           </motion.div>
         </motion.div>
       </section>
 
-      <footer style={{ borderTop: "0.5px solid rgba(0,0,0,0.09)", padding: "2rem 2.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-        <div style={{ fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: "8px" }}>
-          Clarissa Terracciano
-          <a href="/admin" style={{ fontSize: "16px", color: "#0D0D0D", textDecoration: "none" }}>☮</a>
+      <footer style={{ borderTop: "0.5px solid rgba(0,0,0,0.09)", padding: "2rem 1.25rem" }}>
+        <div className="footer-inner" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+          <div style={{ fontSize: "13px", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: "8px" }}>
+            Clarissa Terracciano
+            <a href="/admin" style={{ fontSize: "16px", color: "#0D0D0D", textDecoration: "none" }}>☮</a>
+          </div>
+          <div style={{ fontSize: "12px", color: "#aaa", letterSpacing: "0.04em" }}>Learning · Literacy · Special Education · Curriculum · EdTech · Policy</div>
+          <div style={{ fontSize: "12px", color: "#aaa" }}>© 2026 Educational Consulting</div>
         </div>
-        <div style={{ fontSize: "12px", color: "#aaa", letterSpacing: "0.04em" }}>Learning · Literacy · Special Education · Curriculum · EdTech · Policy</div>
-        <div style={{ fontSize: "12px", color: "#aaa" }}>© 2026 Educational Consulting</div>
       </footer>
     </div>
   );
