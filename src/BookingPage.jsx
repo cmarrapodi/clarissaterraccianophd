@@ -365,24 +365,11 @@ export default function BookingPage() {
               ))}
             </div>
 
-            <div style={{ background: '#F2EBF8', border: '0.5px solid rgba(92,45,130,0.15)', borderRadius: '8px', padding: '1.5rem', marginBottom: '2rem', maxWidth: '540px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 500, color: '#3B1A55', marginBottom: '4px' }}>{service.title}</div>
-              <div style={{ fontSize: '13px', color: '#9B6BBD', marginBottom: '12px' }}>{formatDate(selected.date)} at {selected.time} · via Zoom</div>
-              {service.price > 0 ? (
-                <>
-                  <div style={{ fontSize: '22px', fontWeight: 500, color: '#5C2D82', marginBottom: '6px' }}>${service.price}</div>
-                  <div style={{ fontSize: '12px', color: '#9B6BBD', lineHeight: 1.6 }}>All sessions are billed at a minimum of 1.5 hours (60 min session + 30 min planning).</div>
-                </>
-              ) : (
-                <div style={{ fontSize: '16px', fontWeight: 500, color: '#5C2D82' }}>Complimentary · No charge</div>
-              )}
-            </div>
-
             {error && <div style={{ marginTop: '1rem', padding: '10px 14px', background: '#FDF2F2', border: '0.5px solid rgba(220,50,50,0.2)', borderRadius: '6px', fontSize: '13px', color: '#9B2B2B', maxWidth: '540px' }}>{error}</div>}
 
             <button onClick={handleBook} disabled={loading}
               style={{ marginTop: '2rem', background: loading ? '#9B6BBD' : '#5C2D82', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '3px', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {loading ? 'Processing...' : service.price === 0 ? 'Confirm free booking' : `Continue to payment · $${service.price}`}
+              {loading ? 'Processing...' : service.price === 0 ? 'Confirm booking' : 'Continue to payment'}
               {!loading && <ArrowRight size={14} />}
             </button>
             <p style={{ fontSize: '12px', color: '#aaa', marginTop: '1rem' }}>
