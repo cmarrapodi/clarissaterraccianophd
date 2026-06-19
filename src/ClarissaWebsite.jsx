@@ -61,30 +61,9 @@ const services = [
 ];
 
 const publications = [
-  {
-    type: "presentation",
-    icon: Mic,
-    year: "2024",
-    citation: "Terracciano, C. (2024). Blockchain for Justice and Joy: A Unique Perspective on Revolutionizing Equity, Access and Mobility Through Leadership and Policy.",
-    venue: "UCEA Annual Convention, Los Angeles, CA, USA",
-    url: null,
-  },
-  {
-    type: "blog",
-    icon: PenLine,
-    year: "2025",
-    citation: "Terracciano, C. (2025, April 1). Part I: Introduction to blockchain and literacy and language learning.",
-    venue: "Notre Dame Center for Literacy Education",
-    url: "https://iei.nd.edu/initiatives/notre-dame-center-for-literacy-education/news/part-i-introduction-to-blockchain-and",
-  },
-  {
-    type: "blog",
-    icon: PenLine,
-    year: "2025",
-    citation: "Terracciano, C. (2025, April 2). Part II: How blockchain can support all learners.",
-    venue: "Notre Dame Center for Literacy Education",
-    url: "https://iei.nd.edu/initiatives/notre-dame-center-for-literacy-education/news/part-ii-how-blockchain-can-support-all",
-  },
+  { type: "presentation", icon: Mic, year: "2024", citation: "Terracciano, C. (2024). Blockchain for Justice and Joy: A Unique Perspective on Revolutionizing Equity, Access and Mobility Through Leadership and Policy.", venue: "UCEA Annual Convention, Los Angeles, CA, USA", url: null },
+  { type: "blog", icon: PenLine, year: "2025", citation: "Terracciano, C. (2025, April 1). Part I: Introduction to blockchain and literacy and language learning.", venue: "Notre Dame Center for Literacy Education", url: "https://iei.nd.edu/initiatives/notre-dame-center-for-literacy-education/news/part-i-introduction-to-blockchain-and" },
+  { type: "blog", icon: PenLine, year: "2025", citation: "Terracciano, C. (2025, April 2). Part II: How blockchain can support all learners.", venue: "Notre Dame Center for Literacy Education", url: "https://iei.nd.edu/initiatives/notre-dame-center-for-literacy-education/news/part-ii-how-blockchain-can-support-all" },
 ];
 
 const heroTags = ["Academic Growth", "Executive Functioning", "Social-Emotional Development", "Literacy & Reading", "Special Education"];
@@ -92,34 +71,22 @@ const heroTags = ["Academic Growth", "Executive Functioning", "Social-Emotional 
 const stripItems = ["Academic Growth", "Executive Functioning", "Social-Emotional Coaching", "Literacy & Reading", "Special Education", "Curriculum Design", "EdTech Strategy", "Blockchain & Credentialing", "Homeschool Planning", "Educational Advocacy"];
 
 const pillars = [
-  {
-    label: "Academic Growth",
-    color: "#5C2D82",
-    skills: ["Reading", "Writing", "Mathematics", "Study skills", "Learning strategies", "Project-based learning"],
-  },
-  {
-    label: "Executive Functioning",
-    color: "#0F7EA6",
-    skills: ["Organization", "Planning & prioritization", "Time management", "Task initiation", "Sustained attention", "Working memory", "Goal setting", "Self-monitoring", "Independent learning"],
-  },
-  {
-    label: "Social-Emotional Development",
-    color: "#1A7A5E",
-    skills: ["Emotional regulation", "Frustration tolerance", "Confidence building", "Growth mindset", "Problem-solving", "Self-advocacy", "Social skills", "Resilience", "Managing school anxiety"],
-  },
+  { label: "Academic Growth", color: "#5C2D82", skills: ["Reading", "Writing", "Mathematics", "Study skills", "Learning strategies", "Project-based learning"] },
+  { label: "Executive Functioning", color: "#0F7EA6", skills: ["Organization", "Planning & prioritization", "Time management", "Task initiation", "Sustained attention", "Working memory", "Goal setting", "Self-monitoring", "Independent learning"] },
+  { label: "Social-Emotional Development", color: "#1A7A5E", skills: ["Emotional regulation", "Frustration tolerance", "Confidence building", "Growth mindset", "Problem-solving", "Self-advocacy", "Social skills", "Resilience", "Managing school anxiety"] },
 ];
 
 const familyReasons = [
-  "My child is smart but can't stay organized.",
+  "My child is smart but cannot stay organized.",
   "Homework turns into a battle every night.",
   "My child struggles with focus and follow-through.",
-  "School says they're capable, but they're not performing.",
+  "School says they are capable, but they are not performing.",
   "My child lacks confidence.",
-  "They're falling behind in reading or writing.",
+  "They are falling behind in reading or writing.",
   "They need help becoming more independent.",
-  "We're looking for support beyond traditional tutoring.",
+  "We are looking for support beyond traditional tutoring.",
   "My child learns differently.",
-  "Nothing we've tried seems to be working.",
+  "Nothing we have tried seems to be working.",
 ];
 
 const outcomes = [
@@ -130,6 +97,13 @@ const outcomes = [
   "Improved self-awareness",
   "Academic competence",
   "Tools they can use for life",
+];
+
+const values = [
+  "Deep respect for each learner's individuality",
+  "Research-informed, practical recommendations",
+  "A warm but direct approach to solving learning challenges",
+  "Experience across public, private, virtual, and alternative education spaces",
 ];
 
 function goToBook(serviceId) {
@@ -149,5 +123,4 @@ function useIsMobile() {
 function MarqueeStrip() {
   const doubled = [...stripItems, ...stripItems];
   return (
-    <div style={{ background: "#5C2D82", overflow: "hidden", whiteSpace: "nowrap", padding: "14px 0" }}>
-      <motion.div style={{ display: "inline-flex", gap:
+    <div style={{ background: "#5C2D82", overflow: "hidden", whiteSpace: "nowrap", padding: "14px 0"
