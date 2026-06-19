@@ -335,19 +335,6 @@ export default function BookingPage() {
             <h1 style={{ fontSize: '32px', fontWeight: 400, color: '#0D0D0D', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Your details</h1>
             <p style={{ fontSize: '14px', color: '#888', marginBottom: '2.5rem' }}>Please complete the intake form so Dr. Terracciano can prepare for your session.</p>
 
-            <div style={{ background: '#F2EBF8', border: '0.5px solid rgba(92,45,130,0.15)', borderRadius: '8px', padding: '1.5rem', marginBottom: '2rem' }}>
-              <div style={{ fontSize: '13px', fontWeight: 500, color: '#3B1A55', marginBottom: '4px' }}>{service.title}</div>
-              <div style={{ fontSize: '13px', color: '#9B6BBD', marginBottom: '12px' }}>{formatDate(selected.date)} at {selected.time} · via Zoom</div>
-              {service.price > 0 ? (
-                <>
-                  <div style={{ fontSize: '22px', fontWeight: 500, color: '#5C2D82', marginBottom: '6px' }}>${service.price}</div>
-                  <div style={{ fontSize: '12px', color: '#9B6BBD', lineHeight: 1.6 }}>All sessions are billed at a minimum of 1.5 hours (60 min session + 30 min planning).</div>
-                </>
-              ) : (
-                <div style={{ fontSize: '16px', fontWeight: 500, color: '#5C2D82' }}>Complimentary · No charge</div>
-              )}
-            </div>
-
             <div style={{ fontSize: '13px', fontWeight: 600, color: '#0D0D0D', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '1rem' }}>Contact Information</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '540px', marginBottom: '2.5rem' }}>
               {[
@@ -376,6 +363,19 @@ export default function BookingPage() {
                   )}
                 </div>
               ))}
+            </div>
+
+            <div style={{ background: '#F2EBF8', border: '0.5px solid rgba(92,45,130,0.15)', borderRadius: '8px', padding: '1.5rem', marginBottom: '2rem', maxWidth: '540px' }}>
+              <div style={{ fontSize: '13px', fontWeight: 500, color: '#3B1A55', marginBottom: '4px' }}>{service.title}</div>
+              <div style={{ fontSize: '13px', color: '#9B6BBD', marginBottom: '12px' }}>{formatDate(selected.date)} at {selected.time} · via Zoom</div>
+              {service.price > 0 ? (
+                <>
+                  <div style={{ fontSize: '22px', fontWeight: 500, color: '#5C2D82', marginBottom: '6px' }}>${service.price}</div>
+                  <div style={{ fontSize: '12px', color: '#9B6BBD', lineHeight: 1.6 }}>All sessions are billed at a minimum of 1.5 hours (60 min session + 30 min planning).</div>
+                </>
+              ) : (
+                <div style={{ fontSize: '16px', fontWeight: 500, color: '#5C2D82' }}>Complimentary · No charge</div>
+              )}
             </div>
 
             {error && <div style={{ marginTop: '1rem', padding: '10px 14px', background: '#FDF2F2', border: '0.5px solid rgba(220,50,50,0.2)', borderRadius: '6px', fontSize: '13px', color: '#9B2B2B', maxWidth: '540px' }}>{error}</div>}
