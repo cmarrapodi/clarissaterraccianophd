@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Globe2, Layers3, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -70,7 +70,11 @@ export default function ProjectsPage() {
           </a>
           <a
             href="/projects"
-            style={{ color: "#5C2D82", textDecoration: "none", fontWeight: 600 }}
+            style={{
+              color: "#5C2D82",
+              textDecoration: "none",
+              fontWeight: 600,
+            }}
           >
             Projects
           </a>
@@ -203,21 +207,6 @@ export default function ProjectsPage() {
           <motion.div variants={fadeUp}>
             <div
               style={{
-                width: "64px",
-                height: "64px",
-                borderRadius: "16px",
-                background: "rgba(155,107,189,0.25)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: "2rem",
-              }}
-            >
-              <Globe2 size={30} color="#F2EBF8" />
-            </div>
-
-            <div
-              style={{
                 fontSize: "11px",
                 textTransform: "uppercase",
                 letterSpacing: "0.18em",
@@ -290,37 +279,41 @@ export default function ProjectsPage() {
 
           <motion.div
             variants={fadeUp}
+            whileHover={{ y: -6 }}
             style={{
               minHeight: "420px",
               borderRadius: "20px",
               border: "1px solid rgba(255,255,255,0.1)",
-              background:
-                "linear-gradient(145deg, rgba(92,45,130,0.45), rgba(15,126,166,0.15))",
-              padding: "3rem",
+              background: "#ffffff",
+              padding: "2.5rem",
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-end",
+              alignItems: "center",
+              justifyContent: "center",
               boxShadow: "0 30px 80px rgba(0,0,0,0.25)",
+              overflow: "hidden",
             }}
           >
-            <Sparkles size={34} color="#F2EBF8" />
-            <div
+            <img
+              src="/aletheia-logo.png"
+              alt="Aletheia — Advancing Knowledge. Connecting Minds."
               style={{
-                marginTop: "auto",
-                fontSize: "13px",
-                color: "rgba(255,255,255,0.5)",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
+                width: "100%",
+                maxWidth: "520px",
+                height: "auto",
+                objectFit: "contain",
               }}
-            >
-              Education · Social Technology · Human Development
-            </div>
+            />
           </motion.div>
         </motion.div>
       </section>
 
       {/* DOT */}
-      <section style={{ padding: "7rem 2.5rem", background: "#F9F6F2" }}>
+      <section
+        style={{
+          padding: "7rem 2.5rem",
+          background: "#F9F6F2",
+        }}
+      >
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -337,32 +330,30 @@ export default function ProjectsPage() {
         >
           <motion.div
             variants={fadeUp}
+            whileHover={{ y: -6 }}
             style={{
               minHeight: "420px",
               borderRadius: "20px",
               border: "1px solid rgba(92,45,130,0.12)",
-              background:
-                "linear-gradient(145deg, #F2EBF8, rgba(92,45,130,0.12))",
-              padding: "3rem",
+              background: "#ffffff",
+              padding: "2.5rem",
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-end",
+              alignItems: "center",
+              justifyContent: "center",
               boxShadow: "0 30px 70px rgba(92,45,130,0.08)",
+              overflow: "hidden",
             }}
           >
-            <Layers3 size={36} color="#5C2D82" />
-
-            <div
+            <img
+              src="/dot-logo.png"
+              alt="DOT — Development Over Time"
               style={{
-                marginTop: "auto",
-                fontSize: "13px",
-                color: "#7D5A97",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
+                width: "100%",
+                maxWidth: "560px",
+                height: "auto",
+                objectFit: "contain",
               }}
-            >
-              Learning Infrastructure · Credentialing · Decentralized Education
-            </div>
+            />
           </motion.div>
 
           <motion.div variants={fadeUp}>
@@ -453,7 +444,7 @@ export default function ProjectsPage() {
         </motion.div>
       </section>
 
-      {/* CTA */}
+      {/* FINAL CTA */}
       <section
         style={{
           padding: "6rem 2.5rem",
