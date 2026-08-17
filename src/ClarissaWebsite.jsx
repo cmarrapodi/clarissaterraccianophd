@@ -238,10 +238,10 @@ export default function ClarissaWebsite() {
                 <X size={24} />
               </button>
             </div>
-            {["About", "Services", "Publications", "Contact"].map((item) => (
+            {["About", "Services", "Projects", "Publications", "Contact"].map((item) => (
               <a
                 key={item}
-                href={"#" + item.toLowerCase()}
+                href={item === "Projects" ? "/projects" : "#" + item.toLowerCase()}
                 onClick={() => setMenuOpen(false)}
                 style={{ fontSize: "28px", fontWeight: 300, color: "#fff", textDecoration: "none", letterSpacing: "-0.01em", padding: "1rem 0", borderBottom: "0.5px solid rgba(255,255,255,0.1)" }}
               >
@@ -263,6 +263,7 @@ export default function ClarissaWebsite() {
         <div className="nav-links" style={{ display: "flex", gap: "2rem", fontSize: "13px", color: "#666" }}>
           <a href="#about" style={{ color: "inherit", textDecoration: "none" }}>About</a>
           <a href="#services" style={{ color: "inherit", textDecoration: "none" }}>Services</a>
+          <a href="/projects" style={{ color: "inherit", textDecoration: "none" }}>Projects</a>
           <a href="#publications" style={{ color: "inherit", textDecoration: "none" }}>Publications</a>
           <a href="#booking" style={{ color: "inherit", textDecoration: "none" }}>Contact</a>
         </div>
