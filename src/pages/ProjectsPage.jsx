@@ -262,7 +262,7 @@ export default function ProjectsPage() {
             </p>
 
             <a
-              href="https://aletheia.social"
+              href="https://alethia.social"
               target="_blank"
               rel="noopener noreferrer"
               style={{
