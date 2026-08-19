@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
   try {
     // Email to Clarissa
-    await fetch('https://api.resend.com/emails', {
+    const adminEmailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
@@ -32,8 +32,13 @@ export default async function handler(req, res) {
       }),
     });
 
+    if (!adminEmailResponse.ok) {
+      const errText = await adminEmailResponse.text();
+      throw new Error(`Resend API error: ${errText}`);
+    }
+
     // Confirmation email to client
-    await fetch('https://api.resend.com/emails', {
+    const clientEmailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
@@ -58,6 +63,11 @@ export default async function handler(req, res) {
         `,
       }),
     });
+
+    if (!clientEmailResponse.ok) {
+      const errText = await clientEmailResponse.text();
+      throw new Error(`Resend API error: ${errText}`);
+    }
 
     res.status(200).json({ success: true });
   } catch (error) {

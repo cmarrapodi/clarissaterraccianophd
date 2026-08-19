@@ -167,7 +167,7 @@ export default function BookingPage() {
       const intakeSummary = fields.map(f => `${f.label.toUpperCase()}: ${intake[f.key] || 'Not provided'}`).join('\n')
 
       if (service.price > 0) {
-        await supabase.from('bookings').insert({
+        const { error: dbError } = await supabase.from('bookings').insert({
           client_name: form.name,
           client_email: form.email,
           client_phone: form.phone,
@@ -180,6 +180,7 @@ export default function BookingPage() {
           notes: intakeSummary,
           status: 'pending_payment',
         })
+        if (dbError) throw dbError
         const response = await fetch('/api/create-checkout-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
