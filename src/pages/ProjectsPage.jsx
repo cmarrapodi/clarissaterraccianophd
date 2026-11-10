@@ -81,7 +81,7 @@ export default function ProjectsPage() {
           </a>
 
           <a href="/book" style={{ color: "inherit", textDecoration: "none" }}>
-            Book
+            Request a Consultation
           </a>
         </div>
       </nav>
@@ -179,9 +179,8 @@ export default function ProjectsPage() {
               maxWidth: "760px",
             }}
           >
-            My work does not stop at research, consultation, or theory. I design
-            and build educational technology intended to expand learner agency,
-            strengthen access, rethink digital infrastructure, and move
+            I design and build educational technology intended to expand learner
+            agency, strengthen access, rethink digital infrastructure, and move
             education toward more human-centered, equitable, and liberatory
             systems.
           </motion.p>
@@ -509,7 +508,7 @@ export default function ProjectsPage() {
               letterSpacing: "0.1em",
             }}
           >
-            Work With Dr. Terracciano <ArrowRight size={14} />
+            Request a Consultation <ArrowRight size={14} />
           </a>
         </div>
       </section>
